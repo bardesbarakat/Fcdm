@@ -1,0 +1,187 @@
+﻿@model cdm.Models.SecondmentWithRenewalVM
+
+
+@{
+    ViewBag.Title = "تفاصيل الإعارة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style media="print">
+    /* إخفاء العناصر الغير مطلوبة */
+    .no-print, header, footer, .navbar, .sidebar, .btn, .print-button, .back-button {
+        display: none !important;
+    }
+
+    /* إعدادات أساسية للطباعة */
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-family: "Arial", sans-serif !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* لتفادي تقطيع النصوص */
+    table, tr, td, th {
+        page-break-inside: avoid !important;
+    }
+
+    /* إخفاء أي هوامش أو عناصر مزينة */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0"><i class="bi bi-eye-fill"></i> تفاصيل الإعارة</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <h4 class="mt-4 mb-3 text-primary"> البيانات الاساسية</h4>
+                <div class="col-md-4">
+                    <strong>اسم عضو هيئة التدريس:</strong> @Model.Secondment.FacultyMember.FullName
+                </div>
+                <div class="col-md-4"><strong>الكلية:</strong> @Model.Secondment.FacultyMember.College.CollegeName</div>
+                <div class="col-md-4"><strong>القسم:</strong> @Model.Secondment.FacultyMember.CollegeDepartment.DepartmentName</div>
+
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.Secondment.FacultyMember.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.Secondment.FacultyMember.NationalID</div>
+                <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.Secondment.FacultyMember.JobTitle.JobTitleName</div>
+            </div>
+            <div class="row mb-3">
+
+
+
+                <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.Secondment.FacultyMember.PhoneNumber</div>
+
+                <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.Secondment.FacultyMember.BirthDate.Value.ToString("yyyy-MM-dd")</div>     <div class="col-md-4"><strong>الرقم التأميني:</strong> @Model.Secondment.FacultyMember.InsuranceNumber</div>
+            </div>
+            <div class="row mb-3">
+
+                <div class="col-md-8"><strong>البريد الإلكتروني:</strong> @Model.Secondment.FacultyMember.Email</div>
+
+
+            </div>
+
+            <hr />
+            <div class="row mb-3">
+                <h4 class="mt-4 mb-3 text-primary">بيانات الاعارة</h4>
+                <div class="col-md-4"><strong>نوع الإعارة:</strong> @Model.Secondment.SecondmentsType.SecondmentsName</div>
+
+                <div class="col-md-4"><strong>مكان الإعارة:</strong> @Model.Secondment.SecondmentLocation</div>
+                <div class="col-md-4"><strong>الدولة:</strong> @Model.Secondment.SecondmentsCountry</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>السنة:</strong> @Model.Secondment.SecondmentsYear</div>
+                <div class="col-md-4"><strong>تاريخ البداية:</strong> @Model.Secondment.SecondmentsStartDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>تاريخ النهاية:</strong> @Model.Secondment.SecondmentsEndDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم الموافقة الأمنية:</strong> @Model.Secondment.SecurityApprovalNumber</div>
+                <div class="col-md-4"><strong>تاريخ الموافقة الأمنية:</strong> @Model.Secondment.SecurityApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>تاريخ إخلاء الطرف:</strong> @Model.Secondment.ClearanceDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم قرار الجامعة:</strong> @Model.Secondment.UniversityDecisionNumber</div>
+                <div class="col-md-4"><strong>تاريخ قرار الجامعة:</strong> @Model.Secondment.UniversityDecisionDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4">
+                    <strong>تاريخ استلام العمل بعد العودة:</strong>
+                    @(@Model.Secondment.ReturnWorkDate?.ToString("yyyy-MM-dd") ?? "لا يوجد")
+                </div>
+
+                <div class="row mb-3 pt-3">
+                    <div class="col-md-4">
+                        @if (!string.IsNullOrEmpty(Model.Secondment.PresidentApprovalFile))
+                        {
+                            <div class="mb-3">
+                                <strong>ملف موافقة رئيس الجامعة:</strong>
+                                <a href="@Url.Content("~" + Model.Secondment.PresidentApprovalFile)" class="btn btn-outline-info btn-sm" target="_blank">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> تحميل الملف
+                                </a>
+                            </div>
+                        }
+                    </div>  <div class="col-md-4">
+                        @if (!string.IsNullOrEmpty(Model.Secondment.AccreditationMemo))
+                        {
+                            <div class="mb-3">
+                                <strong>مذكرة الاعتماد:</strong>
+                                <a href="@Url.Content("~" + Model.Secondment.AccreditationMemo)" class="btn btn-outline-info btn-sm" target="_blank">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> تحميل الملف
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model.Renewals != null && Model.Renewals.Any())
+
+                {
+                    <hr />
+                    <h4 class="mt-4 mb-3 text-primary">بيانات التجديدات</h4>
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>تاريخ التجديد</th>
+                                <th>نفس الجهة؟</th>
+                                <th>الجهة الجديدة (إن وُجدت)</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var renewal in Model.Renewals)
+                            {
+                                <tr>
+                                    <td>@renewal.RenewalDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(renewal.IsSameLocation ? "نعم" : "لا")</td>
+                                    <td>@(string.IsNullOrEmpty(renewal.NewLocation) ? "-" : renewal.NewLocation)</td>
+                                    <td>@renewal.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+            </div>
+
+
+
+
+        </div>
+
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Secondments")" class="btn btn-secondary mx-2">رجوع إلى القائمة</a>
+            <button type="button" onclick="printDetails()" class="btn btn-outline-secondary mx-2">🖨️ طباعة</button>
+        </div>
+
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function printDetails() {
+            window.print();
+        }
+
+        function downloadPdf() {
+            var id = '@Model.Secondment.ID'; // أو حسب الـ ViewModel عندك
+            var url = '@Url.Action("ExportDetailsPdf", "Secondments", new { id = "__id__" })'.replace("__id__", id);
+            window.open(url, '_blank');
+        }
+    </script>
+}

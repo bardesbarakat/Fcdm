@@ -1,0 +1,22 @@
+﻿@model cdm.Models.StudyLeaveMember
+
+@{
+    ViewBag.Title = "تأكيد الحذف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-warning shadow-sm">
+        <h4><i class="bi bi-exclamation-triangle"></i> تأكيد الحذف</h4>
+        <p>هل أنت متأكد أنك تريد حذف الإجازة الخاصة بـ @Model.FacultyMember.FullName؟</p>
+
+        @using (Html.BeginForm("Delete", "StudyLeaveMembers", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.LeaveID)
+
+            <button type="submit" class="btn btn-danger">تأكيد الحذف</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">إلغاء</a>
+        }
+    </div>
+</div>

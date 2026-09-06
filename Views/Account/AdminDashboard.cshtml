@@ -1,0 +1,209 @@
+﻿@model cdm.Models.AdminDashboardViewModel
+
+@{
+    ViewBag.Title = "لوحة تحكم المسؤول";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<!-- تخصيص تصميم القائمة -->
+<style>
+    /* تحسين شكل القائمة الفرعية */
+    #reportsList .menu-item {
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    }
+
+        /* عند التحويم */
+        #reportsList .menu-item:hover {
+            background-color: #f8f9fa; /* لون خلفية خفيف */
+        }
+
+        /* العنصر النشط (active) */
+        #reportsList .menu-item.active {
+            background-color: #0d6efd;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* لو الرابط داخلي */
+        #reportsList .menu-item a {
+            color: inherit; /* نفس لون العنصر */
+            text-decoration: none;
+            display: block;
+        }
+
+        /* النص داخل العنصر النشط */
+        #reportsList .menu-item.active a {
+            color: #fff;
+            font-weight: bold;
+        }
+
+    .menu-item {
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+    }
+
+        .menu-item:hover {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+        }
+
+    .card-header i {
+        font-size: 1.3rem;
+    }
+</style>
+
+<div class="container-fluid full-height-container">
+    <div class="row flex-grow-1 pt-2">
+
+        @Html.Partial("_LayoutSidebar")
+        <!-- محتوى القسم المختار -->
+        <div class="col-md-9" id="dashboardContent">
+            <div id="reportFrameContainer" style="width: 100%; height: 600px; display: none;">
+                <iframe id="reportFrame" src="" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+
+            <h2 class="mb-4">لوحة تحكم النظام</h2>
+            <p>اختر أحد العناصر من القائمة اليمنى لعرض التفاصيل هنا.</p>
+        </div>
+    </div>
+</div>
+<script>
+    function loadSection(section) {
+        let menu = document.getElementById('menuList');
+   const urlMap = {
+        users: '@Url.Action("UsersPartial", "Account")',
+        departments: '@Url.Action("DepartmentsPartial", "Account")',
+        faculty: '@Url.Action("FacultyMembersPartial", "Account")',
+        studyleaves: '@Url.Action("StudyLeavesPartial", "Account")',
+        reports: '@Url.Action("ReportsPartial", "Account")'
+    };
+
+
+        let url = urlMap[section];
+        console.log("جارٍ التحميل: ", section, " → ", url); // أضف هذا
+
+        if (url) {
+            $("#dashboardContent").html('<div class="text-center p-4"><div class="spinner-border text-info"></div></div>');
+            $.get(url, function (data) {
+                $("#dashboardContent").html(data);
+            }).fail(function () {
+                alert("فشل في تحميل البيانات. تحقق من الرابط والـ Partial View!");
+            });
+        }
+    }
+</script>
+
+@section scripts {
+    <script>
+        // إظهار نافذة الإضافة
+        function showAddModal() {
+            $('#DepartmentID').val('0'); // ضروري تبقى صفر هنا
+            $('#DepartmentName').val('');
+            $('#DepartmentNameEN').val('');
+            $('#Description').val('');
+            $('#addDepartmentModalLabel').text('إضافة قسم جديد');
+            $('#addDepartmentModal').modal('show');
+        }
+        // إظهار نافذة التعديل
+        function editDepartment(id) {
+            $.get('/Account/GetDepartment/' + id, function (data) {
+                $('#DepartmentID').val(data.DepartmentID);
+                $('#DepartmentName').val(data.DepartmentName);
+                $('#DepartmentNameEN').val(data.DepartmentNameEN);
+                $('#Description').val(data.Description);
+                $('#addDepartmentModalLabel').text('تعديل قسم');
+                $('#addDepartmentModal').modal('show');
+            });
+        }
+
+        // حفظ (إضافة / تعديل)
+        function saveDepartment() {
+            var formData = $('#departmentForm').serialize();
+            $.post('/Account/SaveDepartment', formData, function () {
+                $('#addDepartmentModal').modal('hide');
+                loadSection('departments');
+            }).fail(function () {
+                alert('فشل في الحفظ، تحقق من البيانات أو من الاتصال بالسيرفر.');
+            });
+        }
+
+        // حذف القسم
+        function deleteDepartment(id) {
+            if (confirm('هل أنت متأكد أنك تريد حذف هذا القسم؟')) {
+                $.post('/Account/DeleteDepartment/' + id, function () {
+                    loadSection('departments');
+                }).fail(function () {
+                    alert('فشل في الحذف!');
+                });
+            }
+        }
+
+
+
+
+        //جزء الusers
+      
+            function showAddUserModal() {
+                $('#UserID').val('0');
+            $('#Username').val('');
+            $('#PasswordHash').val('');
+            $('#Email').val('');
+            $('#FullName').val('');
+            $('#PhoneNumber').val('');
+            $('#RoleID').val('');
+            $('#IsActive').prop('checked', true);
+            $('#addUserModalLabel').text('إضافة مستخدم');
+            $('#addUserModal').modal('show');
+        }
+
+            function editUser(id) {
+                $.get('/Account/GetUser/' + id, function (data) {
+                    $('#UserID').val(data.UserID);
+                    $('#Username').val(data.Username);
+                    $('#PasswordHash').val('');
+                    $('#Email').val(data.Email);
+                    $('#FullName').val(data.FullName);
+                    $('#PhoneNumber').val(data.PhoneNumber);
+                    $('#RoleID').val(data.RoleID);
+                    $('#IsActive').prop('checked', data.IsActive);
+                    $('#addUserModalLabel').text('تعديل مستخدم');
+                    $('#addUserModal').modal('show');
+                });
+        }
+
+            function saveUser() {
+            var formData = $('#userForm').serialize();
+            $.post('/Account/SaveUser', formData, function () {
+                $('#addUserModal').modal('hide');
+            loadSection('users');
+            }).fail(function () {
+                alert('فشل في الحفظ! تأكد من البيانات والاتصال بالسيرفر.');
+            });
+        }
+
+            function deleteUser(id) {
+            if (confirm('هل أنت متأكد أنك تريد حذف هذا المستخدم؟')) {
+                $.post('/Account/DeleteUserConfirmed/' + id, function () {
+                    loadSection('users');
+                }).fail(function () {
+                    alert('فشل في الحذف!');
+                });
+            }
+        }
+   
+    </script>
+}
+
+
+

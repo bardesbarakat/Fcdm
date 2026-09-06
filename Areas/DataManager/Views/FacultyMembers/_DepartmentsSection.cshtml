@@ -1,0 +1,76 @@
+﻿@inherits System.Web.Mvc.WebViewPage<cdm.Areas.DataManager.Models.FacultyExcelUploadVM>
+@{
+    ViewBag.Title = "الاقسام";
+    Layout = "~/Areas/DataManager/Views/Shared/_LayoutDataManager.cshtml";
+}
+
+<h4>📚 إدارة الاقسام</h4>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h6 class="card-title">➕ إضافة قسم جديد</h6>
+        @using (Html.BeginForm("CreateDepartment", "FacultyMembers", FormMethod.Post, new { area = "DataManager" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <input name="DepartmentName" class="form-control" placeholder="اسم القسم" required />
+                </div>
+                <div class="col-md-5">
+                    <select name="CollegeID" class="form-select" required>
+                        <option value="">— اختر الكلية —</option>
+                        @foreach (var c in Model.Colleges)
+                        {
+                            <option value="@c.CollegeID">@c.CollegeName (@c.CollegeID)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100">إضافة</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-sm table-striped align-middle">
+    <thead>
+        <tr><th>ID</th><th>اسم القسم</th><th>الكلية</th><th style="width:220px">إجراءات</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model.Departments)
+        {
+            var depFormId = $"dep{d.College_DepartmentID}";
+            <tr>
+                <td>@d.College_DepartmentID</td>
+                <td colspan="2">
+                    <form id="@depFormId" action="@Url.Action("UpdateDepartment","FacultyMembers", new { area="DataManager"})" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="college_DepartmentID" value="@d.College_DepartmentID" />
+                        <div class="row g-1">
+                            <div class="col-md-6"><input type="text" name="DepartmentName" value="@d.DepartmentName" class="form-control form-control-sm" /></div>
+                            <div class="col-md-6">
+                                <select name="CollegeID" class="form-select form-select-sm">
+                                    @foreach (var c in Model.Colleges)
+                                    {
+                                        <option value="@c.CollegeID" @(c.CollegeID == d.CollegeID ? "selected" : "")>@c.CollegeName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                <td>
+                    <button type="submit" form="@depFormId" class="btn btn-sm btn-outline-primary">حفظ</button>
+                    @using (Html.BeginForm("DeleteDepartment", "FacultyMembers", FormMethod.Post, new { area = "DataManager", @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("college_DepartmentID", d.College_DepartmentID)
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('تأكيد الحذف؟');">حذف</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

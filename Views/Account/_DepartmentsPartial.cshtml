@@ -1,0 +1,141 @@
+﻿@model IEnumerable<cdm.Models.Department>
+
+@{ //Layout = "~/Views/Shared/_Layout.cshtml"; 
+var users = ViewBag.Users as List<cdm.Models.User>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>الأقسام</h3>
+    <button class="btn btn-success" onclick="showAddModal()">
+        <i class="bi bi-plus-circle me-1"></i> إضافة قسم جديد
+    </button>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>رقم القسم</th>
+                <th>اسم القسم</th>
+                <th>الوصف</th>
+                <th>تاريخ الإنشاء</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dept in Model)
+            {
+                <tr>
+                    <td>@dept.DepartmentID</td>
+                    <td>@dept.DepartmentName</td>
+                    <td>@dept.Description</td>
+                    <td>@(dept.CreatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "غير محدد")</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" onclick="editDepartment(@dept.DepartmentID)">
+                            <i class="bi bi-pencil-square"></i> تعديل
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDepartment(@dept.DepartmentID)">
+                            <i class="bi bi-trash"></i> حذف
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal إضافة/تعديل قسم -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addDepartmentModalLabel"><i class="bi bi-plus-circle me-2"></i> إضافة قسم</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <form id="departmentForm">
+                    <input type="hidden" id="DepartmentID" name="DepartmentID" value="0" />
+
+                    <div class="mb-3">
+                        <label for="DepartmentName" class="form-label">اسم القسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="DepartmentName" name="DepartmentName" required placeholder="أدخل اسم القسم">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="DepartmentNameEN" class="form-label">اسم القسم بالإنجليزية</label>
+                        <input type="text" class="form-control" id="DepartmentNameEN" name="DepartmentNameEN" placeholder="English name (optional)">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">الوصف</label>
+                        <textarea class="form-control" id="Description" name="Description" rows="3" placeholder="الوصف"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="AssignedUserID" class="form-label">اختر المستخدم المسؤول</label>
+                        <select id="AssignedUserID" name="AssignedUserID" class="form-select">
+                            <option value="">اختر مستخدم</option>
+                            @if (users != null)
+                            {
+                                foreach (var user in users)
+                                {
+                                    <option value="@user.UserID">@user.FullName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-success" onclick="saveDepartment()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function showAddModal() {
+            $('#DepartmentID').val('0');
+            $('#DepartmentName').val('');
+            $('#DepartmentNameEN').val('');
+            $('#Description').val('');
+            $('#AssignedUserID').val(''); // Reset المسؤول
+            $('#addDepartmentModalLabel').text('إضافة قسم جديد');
+            $('#addDepartmentModal').modal('show');
+        }
+
+        function editDepartment(id) {
+            $.get('/Account/GetDepartment/' + id, function (data) {
+                $('#DepartmentID').val(data.DepartmentID);
+                $('#DepartmentName').val(data.DepartmentName);
+                $('#DepartmentNameEN').val(data.DepartmentNameEN);
+                $('#Description').val(data.Description);
+                $('#AssignedUserID').val(data.AssignedUserID); // ملاحظة: لازم الـ API يرجع AssignedUserID لو حابب تعرضه
+                $('#addDepartmentModalLabel').text('تعديل قسم');
+                $('#addDepartmentModal').modal('show');
+            });
+        }
+
+        function saveDepartment() {
+            var formData = $('#departmentForm').serialize();
+            $.post('/Account/SaveDepartment', formData, function () {
+                $('#addDepartmentModal').modal('hide');
+                loadSection('departments');
+            }).fail(function () {
+                alert('فشل في الحفظ، تحقق من البيانات أو من الاتصال بالسيرفر.');
+            });
+        }
+
+        function deleteDepartment(id) {
+            if (confirm('هل أنت متأكد أنك تريد حذف هذا القسم؟')) {
+                $.post('/Account/DeleteDepartment/' + id, function () {
+                    loadSection('departments');
+                }).fail(function () {
+                    alert('فشل في الحذف!');
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,102 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+
+@model IPagedList<cdm.Models.StudyLeaveMember>
+
+
+@{
+    ViewBag.Title = "بيانات القسم";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header text-white text-center"
+             style="background: linear-gradient(90deg, #007cf0, #00dfd8); padding: 25px 15px; border-radius: 0.75rem 0.75rem 0 0;">
+            <h3 class="mb-0 fw-bold text-white">
+                <i class="bi bi-building text-white me-2"></i>
+                بيانات القسم: @ViewBag.DepartmentName
+            </h3>
+        </div>
+
+        <div class="card-body bg-light p-4">
+
+            <!-- ✅ زر الرجوع -->
+            <div class="text-end mb-3">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                    ⬅️ الرجوع إلى الصفحة الرئيسية
+                </a>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center shadow-sm p-4">
+                    <h5 class="mb-3"><i class="bi bi-info-circle-fill me-2"></i>لا توجد بيانات مسجلة لهذا القسم.</h5>
+                </div>
+            }
+            else
+            {
+                <div class="w-100 mb-3">
+                    <div class="d-flex justify-content-start text-start" style="direction: ltr;">
+                        <span class="badge bg-primary me-2">
+                            الصفحة @Model.PageNumber من @Model.PageCount
+                        </span>
+                        <span class="badge bg-secondary me-2">
+                            عدد النتائج الكلي: @Model.TotalItemCount
+                        </span>
+                        <span class="badge bg-info text-dark">
+                            نتائج في هذه الصفحة: @Model.Count
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center bg-white shadow-sm rounded">
+                        <thead style="background-color: #f0f8ff;" class="text-dark fw-bold border-bottom border-2">
+                            <tr>
+                                <th>#</th>
+                                <th><i class="bi bi-person-circle"></i> الاسم</th>
+                                <th><i class="bi bi-tags"></i> نوع الإجازة</th>
+                                <th><i class="bi bi-building-check"></i> الجامعة</th>
+                                <th><i class="bi bi-geo-alt"></i> الدولة</th>
+                                <th><i class="bi bi-calendar-event"></i> تاريخ السفر</th>
+                                <th><i class="bi bi-clock"></i> المدة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.LeaveID</td>
+                                    <td>@(item.FacultyMember.FullName ?? "—")</td>
+                                    <td>@item.LeaveType</td>
+                                    <td>@item.UniversityName</td>
+                                    <td>@item.DestinationCountry</td>
+                                    <td>
+                                        @(item.TravelDate.HasValue ? item.TravelDate.Value.ToString("yyyy-MM-dd") : "—")
+                                        /td>
+                                    <td>@item.LeaveDuration</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ✅ Pagination -->
+                <div class="mt-4 text-center">
+                    @Html.PagedListPager(Model, page => Url.Action("ViewData", new { id = ViewBag.DepartmentID, page }),
+                        new PagedListRenderOptions
+                        {
+                            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            MaximumPageNumbersToDisplay = 5,
+                            LiElementClasses = new[] { "page-item" }
+                        })
+                </div>
+            }
+        </div>
+    </div>
+</div>

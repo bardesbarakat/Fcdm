@@ -1,0 +1,71 @@
+﻿@model cdm.Models.Participation
+
+@{
+    ViewBag.Title = "تفاصيل المشاركة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container bg-white p-4 rounded shadow-sm" id="printableDetails">
+    <h3 class="text-center mb-4 text-primary">تفاصيل @Model.Type</h3>
+
+    <div class="card-body">
+        <h4 class="mb-3 text-primary">البيانات الأساسية لعضو هيئة التدريس</h4>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الاسم:</strong> @Model.FacultyMember.FullName</div>
+            <div class="col-md-4"><strong>الكلية:</strong> @Model.FacultyMember.College.CollegeName</div>
+            <div class="col-md-4"><strong>القسم:</strong> @Model.FacultyMember.CollegeDepartment.DepartmentName</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.FacultyMember.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+            <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.FacultyMember.HireDate.Value.ToString("yyyy-MM-dd")</div>
+            <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.FacultyMember.NationalID</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.FacultyMember.JobTitle.JobTitleName</div>
+            <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.FacultyMember.PhoneNumber</div>
+            <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @Model.FacultyMember.Email</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الرقم التأميني:</strong> @Model.FacultyMember.InsuranceNumber</div>
+            <div class="col-md-4"><strong>النوع:</strong> @Model.FacultyMember.Gender</div>
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3 text-primary">بيانات المشاركة</h4>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>عنوان المشاركة:</strong> @Model.Title</div>
+            <div class="col-md-4"><strong>مكان الانعقاد:</strong> @Model.Location</div>
+            <div class="col-md-4"><strong>البلد:</strong> @Model.Location</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الفترة:</strong> @Model.Period</div>
+            <div class="col-md-4"><strong>النوع:</strong> @Model.Type</div>
+
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12"><strong>ملاحظات:</strong> @Model.Notes</div>
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3 text-primary">معلومات النظام</h4>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>تاريخ الإدخال:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+            <div class="col-md-4"><strong>المستخدم الذي أدخل:</strong> @Model.CreatedBy</div>
+            <div class="col-md-4">
+                <strong>تاريخ التعديل:</strong>
+                @(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "—")
+            </div>
+
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-outline-secondary me-2" onclick="window.print()">🖨️ طباعة</button>
+        <a href="@Url.Action("Edit", "Participations", new { id = Model.Id })" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> تعديل
+        </a>
+        <a href="@Url.Action("Index", "Participations")" class="btn btn-secondary">🔙 الرجوع للقائمة</a>
+    </div>
+</div>

@@ -1,0 +1,296 @@
+﻿@model cdm.Models.StudyLeaveWithRenewalVM
+
+@{
+    ViewBag.Title = " بيانات الإجازة الدراسية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<!-- جدول التفاصيل -->
+<div class="container mt-5 card">
+    <div class="table-responsive" id="printableDetails">
+        <div style="direction: rtl;">
+
+
+            <h3 style="text-align: center; margin: 20px 0;">تفاصيل الإجازة الدراسية</h3>
+
+            @{
+                bool hasRenewal = Model?.Renewals?.Any() == true;
+            }
+
+           
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <h4 class="mt-4 mb-3 text-primary"> البيانات الاساسية</h4>
+                        <div class="col-md-4">
+                            <strong>اسم عضو هيئة التدريس:</strong> @Model.StudyLeave.FacultyMember.FullName
+                        </div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @Model.StudyLeave.FacultyMember.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @Model.StudyLeave.FacultyMember.CollegeDepartment.DepartmentName</div>
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.StudyLeave.FacultyMember.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.StudyLeave.FacultyMember.NationalID</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.StudyLeave.FacultyMember.JobTitle.JobTitleName</div>
+                    </div>
+                    <div class="row mb-3">
+
+
+
+                        <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.StudyLeave.FacultyMember.PhoneNumber</div>
+
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.StudyLeave.FacultyMember.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم التأميني:</strong> @Model.StudyLeave.FacultyMember.InsuranceNumber</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>الرقم التأميني:</strong>@Model.StudyLeave.FacultyMember.Gender
+                        </div>
+                        <div class="col-md-8"><strong>البريد الإلكتروني:</strong> @Model.StudyLeave.FacultyMember.Email</div>
+
+
+                    </div>
+
+                    <hr />
+                    <div class="row mb-3">
+
+                        <div class="col-md-4">
+                            <strong>الموقف من التجنيد:</strong>@Model.StudyLeave.MilitaryStatus
+                        </div>
+                        <div class="col-md-4">
+                            <strong>الدولة الموفد إليها:</strong>
+                            @Model.StudyLeave.DestinationCountry
+                        </div>
+                        <div class="col-md-4">
+                            <strong>اسم الجامعة:</strong>>@Model.StudyLeave.UniversityName
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>نوع الإجازة:</strong>@Model.StudyLeave.LeaveType
+                        </div>
+                        <div class="col-md-4">
+                            <strong>آخر مؤهل:</strong>@Model.StudyLeave.LastQualification
+                        </div>
+                        <div class="col-md-4">
+                            <strong>العام الحالي للإجازة:</strong>@Model.StudyLeave.CurrentYearOfLeave
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>الغرض من الإيفاد:</strong>@Model.StudyLeave.LeavePurpose
+                    </div>
+                    <div class="col-md-4">
+                        <strong>تاريخ إخلاء الطرف:</strong>@Model.StudyLeave.ClearanceDateFromCollege.Value.ToString("yyyy-MM-dd")
+                    </div>
+                    <div class="col-md-4">
+                        <strong>تاريخ السفر:</strong>@Model.StudyLeave.TravelDate.Value.ToString("yyyy-MM-dd")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>مدة الإجازة:</strong>@Model.StudyLeave.LeaveDuration
+                    </div>
+                    <div class="col-md-4">
+                        <strong>قيمة المنحة:</strong>@Model.StudyLeave.GrantValue
+                    </div>
+                    <div class="col-md-4">
+                        <strong>رقم وتاريخ الموافقة الأمنية:</strong>@Model.StudyLeave.SecurityApprovalNumberAndDate
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>موافقة مجلس الكلية:</strong>@Model.StudyLeave.CollegeCouncilApprovalDate.Value.ToString("yyyy-MM-dd")
+                    </div>
+                    <div class="col-md-4">
+                        <strong>موافقة رئيس الجامعة:</strong>@Model.StudyLeave.UniversityPresidentApprovalDate.Value.ToString("yyyy-MM-dd")
+                    </div>
+                    <div class="col-md-4">
+                        <strong>موافقة اللجنة التنفيذية:</strong>@Model.StudyLeave.ExecutiveCommitteeApprovalDate.Value.ToString("yyyy-MM-dd")
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>القرار التنفيذي لرئيس الجامعة:</strong>@Model.StudyLeave.UniversityExecutiveDecision
+                    </div>
+                    <div class="col-md-4">
+                        <strong>
+                            ملف موافقة رئيس الجامعة
+                            :
+                        </strong> @if (!string.IsNullOrEmpty(Model.StudyLeave.UniversityPresidentApprovalFilePath))
+                        {
+                            var fileUrl = Url.Content("~" + Model.StudyLeave.UniversityPresidentApprovalFilePath);
+
+                            <a href="@fileUrl" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="bi bi-eye"></i> عرض
+                            </a>
+
+                            <a href="@fileUrl" download class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-download"></i> تحميل
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">لا يوجد ملف</span>
+                        }
+                        <div class="col-md-4">
+                            <strong>ملف القرار التنفيذي:</strong>  @if (!string.IsNullOrEmpty(Model.StudyLeave.ExecutiveDecisionFilePath))
+                            {
+                                var fileUrl = Url.Content("~" + Model.StudyLeave.ExecutiveDecisionFilePath);
+                                <a href="@fileUrl" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-eye"></i> عرض
+                                </a>
+                                <a href="@fileUrl" download class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-download"></i> تحميل
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">لا يوجد ملف</span>
+                            }
+                        </div>
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>حالة المرتب:</strong>@Model.StudyLeave.SalaryStatus
+                        </div>
+
+                        <div class="col-md-4">
+                            <strong>مدة المنحة:</strong>@Model.StudyLeave.GrantDuration
+                        </div><div class="col-md-4">
+                            <strong>اسم الضامن وصلة القرابة:</strong>@Model.StudyLeave.GuarantorNameAndRelation
+                        </div>
+
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>@Html.DisplayNameFor(m => m.StudyLeave.ReturnMissionFormDate):</strong>@(Model.StudyLeave.ReturnMissionFormDate?.ToString("yyyy-MM-dd") ?? "—")
+                        </div>  <div class="col-md-4">
+                            <strong>@Html.DisplayNameFor(m => m.StudyLeave.DiscussionDate):</strong>@(Model.StudyLeave.DiscussionDate?.ToString("yyyy-MM-dd") ?? "—")
+                        </div>
+                        <div class="col-md-4">
+                            <strong>@Html.DisplayNameFor(m => m.StudyLeave.WorkResumptionDate):</strong>@(Model.StudyLeave.WorkResumptionDate?.ToString("yyyy-MM-dd") ?? "—")
+                        </div>
+                        <div class="col-md-4">
+                            <strong>الملفات الإضافية:</strong>
+                            @{
+                                var files = Model.StudyLeave.AdditionalFilesPath?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+                                int index = 1;
+                            }
+                            <ul class="list-unstyled">
+                                @foreach (var file in files)
+                                {
+                                    var fileName = System.IO.Path.GetFileName(file);
+                                    <li class="mb-1">
+                                        <span class="me-2">ملف @index:</span>
+                                        <a href="@Url.Content("~" + file)" target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="bi bi-eye"></i> عرض
+                                        </a>
+                                        <a href="@Url.Content("~" + file)" download class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-download"></i> تحميل
+                                        </a>
+                                    </li>
+                                    index++;
+                                }
+                            </ul>
+
+                        </div>
+                    </div>
+
+
+
+                    <hr />
+                    @if (hasRenewal)
+                    {
+
+
+                        <h4 class="mt-4 mb-3 text-primary">بيانات التجديدات</h4>
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>رقم</th>
+                                    <th>تاريخ التجديد</th>
+                                    <th>نفس المكان؟</th>
+                                    <th>المكان الجديد</th>
+                                    <th>ملاحظات</th>
+                                    <th>تمت الإضافة بواسطة</th>
+                                    <th>تاريخ الإضافة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Renewals.Count; i++)
+                                {
+                                    var renewal = Model.Renewals[i];
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@renewal.RenewalDate.ToString("yyyy-MM-dd")</td>
+                                        <td>@(renewal.IsSameLocation ? "✔ نعم" : "✖ لا")</td>
+                                        <td>@(string.IsNullOrEmpty(renewal.NewLocation) ? "—" : renewal.NewLocation)</td>
+                                        <td>@(string.IsNullOrEmpty(renewal.Notes) ? "—" : renewal.Notes)</td>
+                                        <td>@(renewal.CreatedByUser?.FullName ?? "—")</td>
+                                        <td>@renewal.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+
+
+
+                    <div style="text-align: left; font-size: 12px; color: gray; margin-top: 30px;">
+                        تم التصدير بتاريخ: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار التصدير -->
+            <div class="text-center mt-4 no-print">
+                <button type="button" onclick="printDetails()" class="btn btn-outline-secondary me-2">🖨️ طباعة</button>
+
+            </div>
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3 my-4">
+
+                        <a href="@Url.Action("Edit", "StudyLeaveMembers", new { id = Model.StudyLeave.LeaveID })" class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> تعديل الإجازة
+                        </a>
+
+
+
+                        <!-- زر إدخال إجازة جديدة -->
+                        <a href="@Url.Action("InsertData", "StudyLeaveMembers")" class="btn btn-success">
+                            ➕ إجازة جديدة
+                        </a>
+
+                        <!-- زر الرجوع للرئيسية -->
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            🏠 الرئيسية
+                        </a>
+                    </div>
+
+                </div>
+            </div>@section Scripts {
+                <script>
+        function printDetails() {
+            window.print();
+        }
+
+        function downloadPdf() {
+            var id = '@Model.StudyLeave.LeaveID';
+            var url = '@Url.Action("ExportDetailsPdf", "StudyLeaveMembers", new { id = "__id__" })'.replace("__id__", id);
+            window.open(url, '_blank');
+        }
+                </script>
+            }
+
+        </div></div>

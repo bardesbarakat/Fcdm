@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "غير مصرح";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger text-center shadow">
+        <h4>⚠️ @ViewBag.Message</h4>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">العودة إلى الأقسام</a>
+    </div>
+</div>

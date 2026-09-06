@@ -1,0 +1,135 @@
+﻿
+@model cdm.Models.VisitingProfessorDetailsVM
+
+@{
+    ViewBag.Title = "تفاصيل الأستاذ الزائر";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style media="print">
+    .no-print, header, footer, .navbar, .sidebar, .btn, .print-button, .back-button {
+        display: none !important;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-family: "Arial", sans-serif !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    table, tr, td, th {
+        page-break-inside: avoid !important;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0"><i class="bi bi-eye-fill"></i> تفاصيل الأستاذ الزائر</h4>
+        </div>
+
+        <div class="card-body">
+            <h4 class="mt-4 mb-3 text-primary">البيانات الأساسية</h4>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>الاسم:</strong>@Model.VisitingProfessor.FacultyMember.FullName
+
+                </div>
+                <div class="col-md-4"><strong>الكلية:</strong> @Model.VisitingProfessor.FacultyMember.College.CollegeName</div>
+                <div class="col-md-4"><strong>القسم:</strong> @Model.VisitingProfessor.FacultyMember.CollegeDepartment.DepartmentName</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.VisitingProfessor.FacultyMember.JobTitle.JobTitleName</div>
+                <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.VisitingProfessor.FacultyMember.NationalID</div>
+                <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.VisitingProfessor.FacultyMember.HireDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.VisitingProfessor.FacultyMember.PhoneNumber</div>
+                <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.VisitingProfessor.FacultyMember.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>الرقم التأميني:</strong> @Model.VisitingProfessor.FacultyMember.InsuranceNumber</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-8"><strong>البريد الإلكتروني:</strong> @Model.VisitingProfessor.FacultyMember.Email</div>
+            </div>
+
+            <hr />
+            <h4 class="mt-4 mb-3 text-primary">بيانات الزيارة</h4>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>نوع الزيارة:</strong> @Model.VisitingProfessor.VisitType</div>
+                <div class="col-md-4"><strong>جهة الزيارة:</strong> @Model.VisitingProfessor.Country</div>
+                <div class="col-md-4"><strong>الغرض من الزيارة:</strong> @Model.VisitingProfessor.VisitPurpose</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>البلد:</strong> @Model.VisitingProfessor.Country</div>
+
+                <div class="col-md-4"><strong>تاريخ البداية:</strong> @Model.VisitingProfessor.VisitStartDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>تاريخ النهاية:</strong> @Model.VisitingProfessor.VisitEndDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم وتاريخ الموافقة الامنية:</strong> @Model.VisitingProfessor.SecurityApprovalNoAndDate</div>
+
+                <div class="col-md-4"><strong>تاريخ موافقة مجلس الكلية :</strong> @Model.VisitingProfessor.CollegeCouncilApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>تاريخ موافقة رئيس الجامعة :</strong> @Model.VisitingProfessor.UniversityPresidentApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم وتاريخ القرار التنفيذي:</strong> @Model.VisitingProfessor.ExecutiveDecisionNoAndDate</div>
+
+                <div class="col-md-4"><strong>اسم الجامعة المسجل بها الزائر:</strong> @Model.VisitingProfessor.VisitorUniversityName</div>
+                <div class="col-md-4"><strong>الكلية المضيفة للزائر :</strong> @Model.VisitingProfessor.HostCollege</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    @if (!string.IsNullOrEmpty(Model.VisitingProfessor.AccreditationMemoFile))
+                    {
+                        <div class="mb-2">
+                            <strong>مذكرة الاعتماد:</strong>
+                            <a href="@Url.Content("~" + Model.VisitingProfessor.AccreditationMemoFile)" class="btn btn-outline-info btn-sm" target="_blank">
+                                <i class="bi bi-file-earmark-arrow-down"></i> تحميل الملف
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-6">
+                    @if (!string.IsNullOrEmpty(Model.VisitingProfessor.PresidentApprovalFile))
+                    {
+                        <div class="mb-2">
+                            <strong>موافقة رئيس الجامعة:</strong>
+                            <a href="@Url.Content("~" + Model.VisitingProfessor.PresidentApprovalFile)" class="btn btn-outline-info btn-sm" target="_blank">
+                                <i class="bi bi-file-earmark-arrow-down"></i> تحميل الملف
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "VisitingProfessors")" class="btn btn-secondary mx-2">رجوع إلى القائمة</a>
+            <button type="button" onclick="printDetails()" class="btn btn-outline-secondary mx-2">🖨️ طباعة</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function printDetails() {
+            window.print();
+        }
+    </script>
+}

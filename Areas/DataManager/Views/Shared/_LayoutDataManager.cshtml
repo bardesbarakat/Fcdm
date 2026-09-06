@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - إدارة البيانات</title>
+
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/fontawesome/css/all.min.css" rel="stylesheet" /> @* لو عندك أيقونات *@
+    <link href="~/Content/Site.css" rel="stylesheet" />
+
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #343a40;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+            .sidebar .nav-link {
+                color: #ddd;
+            }
+
+                .sidebar .nav-link.active,
+                .sidebar .nav-link:hover {
+                    background: #495057;
+                    color: #fff;
+                }
+
+        .content {
+            flex-grow: 1;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <!-- الشريط الجانبي -->
+    <div class="sidebar d-flex flex-column p-3">
+        <h4 class="text-center mb-4">📊 Data Manager</h4>
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link @(ViewBag.Title=="الكليات"?"active":"")"
+                   href="@Url.Action("Colleges","FacultyMembers", new { area="DataManager"})">
+                    📚 الكليات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewBag.Title=="الأقسام"?"active":"")"
+                   href="@Url.Action("Departments","FacultyMembers", new { area="DataManager"})">
+                    🏢 الأقسام
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewBag.Title=="الوظائف"?"active":"")"
+                   href="@Url.Action("Jobs","FacultyMembers", new { area="DataManager"})">
+                    💼 الوظائف
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewBag.Title=="الإكسل"?"active":"")"
+                   href="@Url.Action("Excel","FacultyMembers", new { area="DataManager"})">
+                    📂 رفع Excel
+                </a>
+            </li>
+        </ul>
+
+    </div>
+
+    <!-- المحتوى -->
+    <div class="content">
+        <div class="topbar d-flex justify-content-between align-items-center">
+            <span class="fw-bold">لوحة إدارة البيانات</span>
+            <a href="@Url.Action("Index","Home", new { area = "" })" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-home"></i> رجوع للموقع
+            </a>
+        </div>
+
+        @RenderBody()
+
+        <footer class="text-center mt-5">
+            <small>© @DateTime.Now.Year - Fayoum University Data Manager</small>
+        </footer>
+    </div>
+
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,28 @@
+﻿
+@model IEnumerable<cdm.Models.FacultyMember>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-fluid full-height-container">
+    <div class="row flex-grow-1 pt-2">
+     
+        @Html.Partial("_LayoutSidebar")
+        <!-- محتوى القسم المختار -->
+        <div class="col-md-9" id="dashboardContent">
+            <h3>أعضاء هيئة التدريس الذين لهم إجازات دراسية</h3>
+            <ul class="list-group">
+                @foreach (var member in Model)
+                {
+                    <li class="list-group-item">
+                        <a href="@Url.Action("StudyLeavesByMember", "Account", new { id = member.FacultyMemberID })" class="text-decoration-none text-dark">
+                            <i class="bi bi-person me-2"></i> @member.FullName
+                        </a>
+                    </li>
+                }
+            </ul>
+
+        </div>
+    </div></div>

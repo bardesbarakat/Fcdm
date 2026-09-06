@@ -1,0 +1,168 @@
+﻿
+@model IEnumerable<cdm.Models.SecondmentReportVM>
+@using System.Linq
+@using System.Text
+@using System.Globalization
+
+@{
+    var first = Model.FirstOrDefault();
+    string collegeName = first?.CollegeName ?? "—";
+    string from = Request["fromDate"];
+    string to = Request["toDate"];
+    int counter = 1;
+}
+<div id="printArea">
+    <div class="text-center mb-4">
+        <cneter>
+            <h5 class="fw-bold text-decoration-underline">بيان بالسادة أعضاء هيئة التدريس المعارين</h5>
+            <p>
+                خلال الفترة من <strong>@from</strong> وحتى <strong>@to</strong>
+            </p>
+        </cneter>
+        <left>
+            <p class=" me-5 mx-5" style="text-align: left;">
+                <strong>الكلية:</strong> @collegeName
+            </p>
+        </left>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">لا توجد بيانات مطابقة للفلاتر المختارة.</div>
+    }
+    else
+    {
+        <table id="reportTable" class="table table-bordered table-striped text-center">
+
+            <thead class="table-success">
+                <tr>
+                    <th>م</th>
+                    <th>الاســـــــــــــــــــم</th>
+                    <th>الرقم القومي</th>
+                    <th>تاريخ الموافقة على الإعارة</th>
+                    <th>تاريخ بدء الإعارة</th>
+                    <th>تاريخ انتهاء الإعارة</th>
+                    <th>جهة السفر</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@item.FullName</td>
+                        <td>@item.NationalID</td>
+                        <td>@(item.SecurityApprovalDate.HasValue ? item.SecurityApprovalDate.Value.ToString("yyyy-MM-dd") : "--")</td>
+                        <td>@item.SecondmentsStartDate.Value.ToString("yyyy-MM-dd")</td>
+                        <td>@item.SecondmentsEndDate.Value.ToString("yyyy-MM-dd")</td>
+                        <td>@item.SecondmentLocation</td>
+                    </tr>
+                    counter++;
+                }
+            </tbody>
+        </table>
+    }
+
+
+    <div class="mt-5 pt-5" id="signatures">
+        <div style="display: flex; justify-content: space-between; margin-top: 60px;">
+            <div class="mt-5 px-4 d-print-block" style="text-align:left">
+                <p><strong class="px-5">توقيع المدير </strong> <br />_______________________</p>
+            </div>
+
+            <div class="text-end mt-4">
+                <p><strong>تاريخ الطباعة:</strong> @DateTime.Now.ToString("yyyy-MM-dd")</p>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="text-end mb-3">
+    <button class="btn btn-outline-primary" onclick="printReport()">
+        🖨️ طباعة التقرير
+    </button>
+</div>
+
+
+
+<!-- CSS للطباعة -->
+@*<style>
+        @@media print {
+            body {
+                direction: rtl;
+                font-family: "Segoe UI", Tahoma, sans-serif;
+            }
+
+            .d-print-none {
+                display: none !important;
+            }
+
+            #reportTable, #reportTable th, #reportTable td {
+                border: 1px solid black !important;
+                border-collapse: collapse !important;
+            }
+
+                #reportTable th, #reportTable td {
+                    padding: 6px !important;
+                }
+
+                #reportTable thead {
+                    background-color: #f2f2f2 !important;
+                }
+        }
+    </style>*@
+
+<!-- JS طباعة -->
+<script>
+    function printReport() {
+        const content = document.getElementById("printArea").innerHTML;
+        const printWindow = window.open('', '', 'width=1000,height=800');
+        printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>تقرير المعارين خلال فترة زمنية معينه</title>
+                        <style>
+                          body {
+    direction: rtl;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    padding: 20px;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 6px;
+}
+
+thead {
+    background-color: #d1e7dd; /* نفس لون table-success */
+    color: #0f5132;
+    font-weight: bold;
+}
+
+h5 {
+    text-decoration: underline;
+    margin-bottom: 20px;
+}
+
+.text-end {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+                        </style>
+                    </head>
+                    <body onload="window.print(); window.close();">
+                        ${content}
+                    </body>
+                </html>
+            `);
+        printWindow.document.close();
+    }
+</script>
+
+

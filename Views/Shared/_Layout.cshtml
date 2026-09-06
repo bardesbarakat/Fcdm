@@ -1,0 +1,213 @@
+﻿@{ Layout = null; }
+@using cdm.Database
+@using cdm.Helpers
+@{
+    var db = new AppDbContext();
+    var departments = db.Departments.ToList();
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>مكتب العلاقات الثقافية - جامعة الفيوم</title>
+    <style>
+        @@media print {
+            .no-print, header, nav, .navbar, .sidebar, footer {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+            }
+
+            #printableDetails {
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+        }
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer {
+            background: #8a5b0a; /* لون الفوتر */
+            color: #fff;
+            padding: 12px 0;
+            margin-top: auto; /* يخلي الفوتر يروح تحت */
+        }
+
+            .footer .footer-bar {
+                min-height: 44px;
+            }
+
+            .footer .bi {
+                font-size: 1rem;
+                opacity: .9;
+            }
+
+            .footer a.link-light:hover {
+                text-decoration: underline;
+            }
+
+            .footer .sep {
+                opacity: .6;
+                margin: 0 .25rem;
+            }
+
+
+    </style>
+
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Raleway:wght@100..900&family=Cairo&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    @RenderSection("styles", required: false)
+    <link href="@Url.Content("~/Content/vendor/bootstrap/css/bootstrap.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/css/main.css")" rel="stylesheet" />
+    
+   
+
+    <!-- Render Bundled CSS -->
+    @Styles.Render("~/bundles/css")
+</head>
+<body class="index-page">
+
+    <header id="header" class="header no-print d-flex align-items-center fixed-top">
+
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+            <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center me-auto me-xl-0">
+                <h1 class="sitename">مكتب العلاقات الثقافية</h1>
+            </a>
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="@Url.Action("Index", "Home")" class="active">الرئيسية</a></li>
+                    <li><a href="@Url.Action("About", "Home")">عن</a></li>
+                    <li class="dropdown">
+                        <a href="#"><span>الأقسام</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            @foreach (var dept in departments)
+                            {
+                                var encId = EncryptionHelper.Encrypt(dept.DepartmentID.ToString());
+
+                                // اسم الكنترولر = اسم القسم بالإنجليزي (موجود في قاعدة البيانات)
+                                string targetController = dept.DepartmentNameEN;
+
+                                <li>
+                                    <a href="@Url.Action("Index", targetController, new { encryptedId = encId })">
+                                        @dept.DepartmentName
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+                    </li>
+                    <li><a href="@Url.Action("Index", "MainReports")">التقارير</a></li>
+                    <li><a href="@Url.Action("Team", "Home")">الفريق</a></li>
+                    <li><a href="@Url.Action("Contact", "Home")">اتصل بنا</a></li>
+
+                    @if (Session != null && Session["UserID"] != null)
+                    {
+                        var userImage = Session["UserImage"] as string;
+                      
+                        var imageUrl = string.IsNullOrEmpty(userImage) ? Url.Content("~/Content/UserImages/default.png") : userImage;
+
+                        <li class="dropdown">
+                            <a href="#">
+                                <span class="d-flex align-items-center">
+                                    <img src="@imageUrl" alt="user" style="width:30px;height:30px;border-radius:50%;margin-left:8px;" />
+                                    @Session["FullName"]
+                                </span>
+                                <i class="bi bi-chevron-down toggle-dropdown"></i>
+                            </a>
+                            <ul>
+                                <li><a href="@Url.Action("EditProfile", "Account")">الملف الشخصي</a></li>
+
+                                @if ((int?)Session["RoleID"] == 3 || (int?)Session["RoleID"] == 2)
+                                {
+                                    <li><a href="@Url.Action("AdminDashboard", "Account")">لوحة التحكم</a></li>
+                                }
+
+                                <li><a href="@Url.Action("Logout", "Account")" class="text-danger">تسجيل خروج</a></li>
+                            </ul>
+                        </li>
+                    }
+
+                    else
+                    {
+                        <li>
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light btn-sm d-flex justify-content-center align-items-center px-2">
+                                تسجيل دخول
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main" class="pt-0 pb-5" style="background-image: url('@Url.Content("~/Content/img/inspiration-geometry.png")'); background-repeat: repeat; background-attachment: fixed;">
+
+        @RenderBody()
+    </main>
+
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="footer-bar d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
+                <div class="footer-copy small">
+                    جميع الحقوق محفوظة © لمكتب العلاقات الثقافية بجامعة الفيوم
+                </div>
+
+                <div class="footer-contact small d-flex align-items-center flex-wrap gap-3">
+                    <span class="d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-envelope"></i>
+                        <a class="link-light text-decoration-none" href="mailto:gcr@fayoum.edu.eg">gcr@fayoum.edu.eg</a>
+                    </span>
+                    <span class="sep d-none d-md-inline">•</span>
+                    <span class="d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-printer"></i>
+                        فاكس: 0842110562
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- Scroll Top -->
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- Render Bundled JS -->
+    @*    @Scripts.Render("~/bundles/js")*@
+    <script src="~/Content/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/vendor/php-email-form/validate.js"></script>
+    <script src="~/Content/vendor/aos/aos.js"></script>
+    <script src="~/Content/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="~/Content/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="~/Content/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="~/Content/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="~/Content/js/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

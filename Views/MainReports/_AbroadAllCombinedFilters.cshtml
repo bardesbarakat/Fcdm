@@ -1,0 +1,20 @@
+﻿@{
+    var colleges = ViewBag.Colleges as List<SelectListItem>;
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label for="academicYearStart" class="form-label">بداية العام الجامعي</label>
+        <input type="number" name="academicYearStart" class="form-control" placeholder="مثال: 2024" required />
+    </div>
+
+    <div class="col-md-4">
+        <label for="academicYearEnd" class="form-label">نهاية العام الجامعي</label>
+        <input type="number" name="academicYearEnd" class="form-control" placeholder="مثال: 2025" required />
+    </div>
+
+    <div class="col-md-4">
+        <label for="collegeId" class="form-label">الكلية</label>
+        @Html.DropDownList("collegeId", colleges, "كل الكليات", new { @class = "form-control" })
+    </div>
+</div>

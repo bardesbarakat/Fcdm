@@ -1,0 +1,174 @@
+﻿
+@model List<cdm.Models.User>
+@{
+ //   Layout = "~/Views/Shared/_Layout.cshtml";
+    var roles = ViewBag.Roles as List<cdm.Models.Role>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>المستخدمون</h3>
+    <button class="btn btn-success" onclick="showAddUserModal()">
+        <i class="bi bi-plus-circle me-1"></i> إضافة مستخدم جديد
+    </button>
+</div>
+
+<table class="table table-bordered table-hover text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>الاسم</th>
+            <th>البريد</th>
+            <th>رقم الهاتف</th>
+            <th>الدور</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Role.RoleName </td>
+                <td>@((user.IsActive ))</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" onclick="editUser(@user.UserID)">
+                        <i class="bi bi-pencil-square"></i> تعديل
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(@user.UserID)">
+                        <i class="bi bi-trash"></i> حذف
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal إضافة/تعديل مستخدم -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addUserModalLabel">إضافة مستخدم</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="UserID" name="UserID" value="0" />
+
+                    <div class="mb-3">
+                        <label for="Username" class="form-label">اسم المستخدم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Username" name="Username" required placeholder="اسم المستخدم" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PasswordHash" class="form-label">
+                            كلمة المرور
+
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" class="form-control" id="PasswordHash" name="PasswordHash" required placeholder="كلمة المرور" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Email" class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" id="Email" name="Email" placeholder="البريد الإلكتروني" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="FullName" class="form-label">
+
+                            الاسم الكامل
+                            <span class="text-danger">*</span>
+
+                        </label>
+                        <input type="text" class="form-control" id="FullName" name="FullName" required placeholder="الاسم الكامل" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PhoneNumber" class="form-label">رقم الهاتف</label>
+                        <input type="text" class="form-control" id="PhoneNumber" name="PhoneNumber" placeholder="رقم الهاتف" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="RoleID" class="form-label">الدور</label>
+                        <select class="form-select" id="RoleID" name="RoleID">
+                            <option value="">اختر الدور</option>
+                            @if (roles != null)
+                            {
+                                foreach (var role in roles)
+                                {
+                                    <option value="@role.RoleID">@role.RoleName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="hidden" name="IsActive" value="false" />
+                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" />
+                        <label class="form-check-label" for="IsActive">نشط</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-success" onclick="saveUser()">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function showAddUserModal() {
+            $('#UserID').val('0');
+            $('#Username').val('');
+            $('#PasswordHash').val('');
+            $('#Email').val('');
+            $('#FullName').val('');
+            $('#PhoneNumber').val('');
+            $('#RoleID').val('');
+            $('#IsActive').prop('checked', true);
+            $('#addUserModalLabel').text('إضافة مستخدم');
+            $('#addUserModal').modal('show');
+        }
+
+        function editUser(id) {
+            $.get('/Account/GetUser/' + id, function (data) {
+                $('#UserID').val(data.UserID);
+                $('#Username').val(data.Username);
+                $('#PasswordHash').val('');
+                $('#Email').val(data.Email);
+                $('#FullName').val(data.FullName);
+                $('#PhoneNumber').val(data.PhoneNumber);
+                $('#RoleID').val(data.RoleID);
+                $('#IsActive').prop('checked', data.IsActive);
+                $('#addUserModalLabel').text('تعديل مستخدم');
+                $('#addUserModal').modal('show');
+            });
+        }
+
+        function saveUser() {
+            var formData = $('#userForm').serialize();
+            $.post('/Account/SaveUser', formData, function () {
+                $('#addUserModal').modal('hide');
+                loadSection('users');
+            }).fail(function () {
+                alert('فشل في الحفظ! تأكد من البيانات والاتصال بالسيرفر.');
+            });
+        }
+
+        function deleteUser(id) {
+            if (confirm('هل أنت متأكد أنك تريد حذف هذا المستخدم؟')) {
+                $.post('/Account/DeleteUserConfirmed/' + id, function () {
+                    loadSection('users');
+                }).fail(function () {
+                    alert('فشل في الحذف!');
+                });
+            }
+        }
+    </script>
+}
+

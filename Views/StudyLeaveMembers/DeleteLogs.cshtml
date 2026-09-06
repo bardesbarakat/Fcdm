@@ -1,0 +1,36 @@
+﻿@model cdm.Models.DeleteLog
+
+@{
+    ViewBag.Title = "تفاصيل سجل الحذف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4><i class="bi bi-info-circle"></i> تفاصيل سجل الحذف</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">نوع العنصر:</dt>
+                <dd class="col-sm-9">@Model.EntityType</dd>
+
+                <dt class="col-sm-3">الاسم:</dt>
+                <dd class="col-sm-9">@Model.EntityName</dd>
+
+                <dt class="col-sm-3">معلومات إضافية:</dt>
+                <dd class="col-sm-9">@Model.AdditionalInfo</dd>
+
+                <dt class="col-sm-3">القسم:</dt>
+                <dd class="col-sm-9">@Model.DepartmentName</dd>
+
+                <dt class="col-sm-3">المستخدم الذي حذف:</dt>
+                <dd class="col-sm-9">@(Model.DeletedByUserId)</dd>
+
+                <dt class="col-sm-3">تاريخ الحذف:</dt>
+                <dd class="col-sm-9">@Model.DeletedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+            </dl>
+            <a href="@Url.Action("DeleteLogs", "StudyLeaveMembers")" class="btn btn-secondary">رجوع</a>
+        </div>
+    </div>
+</div>

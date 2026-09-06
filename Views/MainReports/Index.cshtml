@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "التقارير";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-center text-primary mb-4">
+    <i class="bi bi-file-earmark-text"></i> التقارير
+</h2>
+
+<div class="container">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <!-- اختيار نوع التقرير -->
+            <div class="mb-3">
+                <label for="reportType" class="form-label fw-bold">اختر نوع التقرير:</label>
+                <select id="reportType" class="form-control" onchange="loadFilters()">
+                    <option value="">-- اختر --</option>
+                    <option value="SecondmentsDetails">بيان المعارين خلال فترة</option>
+                    <option value="SecondmentsCounts">أعداد المعارين حسب الدرجة</option>
+                    <option value="AllAbroadMembers">المعارين والإجازات والمهمات بالخارج</option>
+                    <option value="CurrentlyAbroad">من بالخارج حالياً</option>
+                    <option value="LeaveStatusAll">الإجازات والمنح - الداخل والخارج</option>
+                    <option value="StatisticsByYear">إحصائيات حسب السنوات</option>
+                    <option value="StatisticalSummary">بيان إحصائي عن البعثات والإجازات وغيرها</option>
+                    <option value="ExpandedSummary">بيان إحصائي عن البعثات والإجازات والمنح والمهمات والإعارات والزائرين</option>
+                </select>
+            </div>
+
+            <!-- الفلاتر الديناميكية حسب التقرير -->
+            <div id="filtersContainer" class="mb-3">
+                <!-- يتم تحميل الفلاتر المناسبة هنا حسب نوع التقرير -->
+            </div>
+
+            <!-- زر توليد التقرير -->
+            <button id="generateBtn" class="btn btn-primary" onclick="generateReport()" disabled>
+                <i class="bi bi-search"></i> عرض التقرير
+            </button>
+        </div>
+    </div>
+
+    <!-- نتيجة التقرير -->
+    <div id="reportResult">
+        <!-- يتم عرض التقرير هنا -->
+    </div>
+</div>
+
+<!-- Overlay التحميل -->
+<div id="loadingOverlay" style="display:none;">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-box">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+        <div class="mt-2">جارٍ تحميل التقرير…</div>
+    </div>
+</div>
+
+@section styles{
+    <style>
+        /* Overlay */
+        #loadingOverlay .overlay-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.35);
+            z-index: 1040;
+        }
+
+        #loadingOverlay .overlay-box {
+            position: fixed;
+            z-index: 1041;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            color: #333;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.2);
+            text-align: center;
+            min-width: 220px;
+        }
+    </style>
+}
+
+@section scripts{
+    <script>
+        function loadFilters() {
+            const reportType = $("#reportType").val();
+            $("#reportResult").empty();                       // تفريغ النتيجة السابقة
+            $("#generateBtn").prop("disabled", !reportType);  // تمكين/تعطيل الزر
+
+            if (!reportType) {
+                $("#filtersContainer").html('');
+                return;
+            }
+
+            $.get('@Url.Action("GetFiltersPartial", "MainReports")',
+                { reportType: reportType },
+                function (html) {
+                    $("#filtersContainer").html(html);
+                });
+        }
+
+        function generateReport() {
+            const reportType = $("#reportType").val();
+            const filters = $("#filtersContainer").find("input, select, textarea").serialize();
+
+            // إظهار Overlay التحميل
+            $("#loadingOverlay").show();
+
+            $.get('@Url.Action("Generate", "MainReports")',
+                Object.assign({ reportType: reportType }, Object.fromEntries(new URLSearchParams(filters))),
+                function (html) {
+                    $("#reportResult").html(html);
+                })
+                .fail(function () {
+                    $("#reportResult").html(
+                        '<div class="alert alert-danger">حدث خطأ أثناء تحميل التقرير. برجاء المحاولة لاحقاً.</div>'
+                    );
+                })
+                .always(function () {
+                    // إخفاء Overlay التحميل
+                    $("#loadingOverlay").hide();
+                });
+        }
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿@using X.PagedList.Mvc
+@using X.PagedList
+
+@model X.PagedList.IPagedList<cdm.Models.FacultyMember>
+
+@{
+    Layout = null;
+}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>الاسم الكامل</th>
+                <th>الكلية</th>
+                <th>القسم</th>
+                <th>المسمى الوظيفي</th>
+                <th>أدخل بواسطة</th>
+                <th>تاريخ الإدخال</th>
+                <th>تاريخ التعديل</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var member in Model)
+            {
+                <tr>
+                    <td>@member.FullName</td>
+                    <td>@member.College.CollegeName</td>
+                    <td>@member.CollegeDepartment.DepartmentName</td>
+                    <td>@member.JobTitle.JobTitleName</td>
+                    <td>@member.User.FullName</td>
+                    <td>@member.UserInsertedDate.ToString() ?? "غير محدد"</td>
+                    <td>@member.UserUpdatedDate.ToString() ?? "غير محدد"</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-center my-3">
+        @Html.PagedListPager(Model, page => Url.Action("FacultyMembersPartial", new { page }), PagedListRenderOptions.Classic)
+    </div>
+</div>

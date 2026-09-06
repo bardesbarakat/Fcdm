@@ -1,0 +1,83 @@
+﻿
+@model cdm.Models.SecondmentsData
+
+@{
+    ViewBag.Title = "تجديد الإعارة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">تجديد الإعارة لعضو هيئة التدريس: @Model.FacultyMember.FullName</h5>
+        </div>
+
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">نوع الإعارة</dt>
+                <dd class="col-sm-9">@Model.SecondmentsType.SecondmentsName </dd>
+
+                <dt class="col-sm-3">الدولة</dt>
+                <dd class="col-sm-9">@Model.SecondmentsCountry</dd>
+
+                <dt class="col-sm-3">تاريخ البداية</dt>
+                <dd class="col-sm-9">@Model.SecondmentsStartDate.Value.ToString("yyyy-MM-dd")</dd>
+            </dl>
+
+            <hr />
+
+            @using (Html.BeginForm("SaveRenewal", "Secondments", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("EntityID", Model.ID)
+                @Html.Hidden("EntityType", "Secondment")
+
+                <div class="form-group">
+                    <label>تاريخ التجديد <span class="text-danger">*</span></label>
+                    <input type="date" name="RenewalDate" class="form-control" required />
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>هل نفس الجهة؟</label><br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IsSameLocation" id="sameYes" value="true" checked />
+                        <label class="form-check-label" for="sameYes">نعم</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IsSameLocation" id="sameNo" value="false" />
+                        <label class="form-check-label" for="sameNo">لا</label>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3" id="newLocationGroup" style="display: none;">
+                    <label>الجهة الجديدة (إن وُجدت)</label>
+                    <input type="text" name="NewLocation" class="form-control" />
+                </div>
+
+                <div class="form-group mt-4">
+                    <label>ملاحظات</label>
+                    <textarea name="Notes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-success">حفظ التجديد</button>
+                    <a href="@Url.Action("Index", "Secondments")" class="btn btn-secondary ms-2">إلغاء</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // إظهار أو إخفاء خانة الجهة الجديدة حسب الاختيار
+        document.querySelectorAll('input[name="IsSameLocation"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var show = this.value === "false";
+                document.getElementById("newLocationGroup").style.display = show ? "block" : "none";
+            });
+        });
+    </script>
+}
+

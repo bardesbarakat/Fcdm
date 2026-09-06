@@ -1,0 +1,118 @@
+﻿@model cdm.Models.StudyLeaveMember
+
+@{
+    ViewBag.Title = "تجديد الإجازة الدراسية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">تجديد الإجازة الدراسية لعضو هيئة التدريس: @Model.FacultyMember.FullName</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table text-center">
+                    <tbody>
+                        <tr>
+                            <th>نوع الإجازة</th>
+                            <td>@Model.LeaveType</td>
+
+                            <th>الدولة</th>
+                            <td>@Model.DestinationCountry</td>
+
+                            <th>تاريخ البداية</th>
+                            <td>@Model.TravelDate?.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <th>الغرض من الإجازة</th>
+                            <td>@Model.LeavePurpose</td>
+
+                            <th>مدة الإجازة</th>
+                            <td>@Model.GrantDuration</td>
+
+                            <th></th>
+                            <td></td> <!-- خلية فارغة لو حبيت تسيبها فاضية -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <hr />
+
+            @using (Html.BeginForm("SaveRenewal", "StudyLeaveMembers", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("EntityID", Model.LeaveID)
+                @Html.Hidden("EntityType", "StudyLeave")
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>تاريخ التجديد <span class="text-danger">*</span></label>
+                            <input type="date" name="RenewalDate" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="form-group mt-3">
+                            <label>هل نفس الجهة؟</label><br />
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsSameLocation" id="sameYes" value="true" checked />
+                                <label class="form-check-label" for="sameYes">نعم</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="IsSameLocation" id="sameNo" value="false" />
+                                <label class="form-check-label" for="sameNo">لا</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mt-3" id="newLocationGroup" style="display: none;">
+                            <label>الجهة الجديدة (إن وُجدت)</label>
+                            <input type="text" name="NewLocation" class="form-control" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mt-4">
+                            <label>ملاحظات</label>
+                            <textarea name="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-success">حفظ التجديد</button>
+                    <a href="@Url.Action("Index", "StudyLeaveMembers")" class="btn btn-secondary ms-2">إلغاء</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // إظهار أو إخفاء خانة الجهة الجديدة حسب الاختيار
+        document.querySelectorAll('input[name="IsSameLocation"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var show = this.value === "false";
+                document.getElementById("newLocationGroup").style.display = show ? "block" : "none";
+            });
+        });
+    </script>
+}
+
+

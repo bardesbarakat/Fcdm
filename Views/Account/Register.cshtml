@@ -1,0 +1,102 @@
+@model cdm.Models.User
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: linear-gradient(to right, #00c6ff, #0072ff);
+        height: 100vh;
+        margin: 0;
+    }
+
+    .register-card {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0 25px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 500px;
+    }
+
+        .register-card .form-label i {
+            margin-right: 5px;
+        }
+
+    .register-heading {
+        font-weight: 600;
+        font-size: 1.8rem;
+    }
+
+    .register-card .btn-success {
+        background: #28a745;
+        border: none;
+    }
+
+        .register-card .btn-success:hover {
+            background: #218838;
+        }
+
+    .form-control:focus {
+        border-color: #0072ff;
+        box-shadow: 0 0 0 0.2rem rgba(0,114,255,0.25);
+    }
+</style>
+
+<section class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="register-card">
+        <h2 class="text-center register-heading text-success mb-4">Create New Account</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.Username, "Username", new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", required = "required" })
+            </div>
+
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.Email, "Email", new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label"><i class="bi bi-lock-fill"></i> Password</label>
+                <input type="password" name="Password" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.FullName, "Full Name", new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-3">
+                @Html.LabelFor(m => m.PhoneNumber, "Phone Number", new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label">Profile Image</label>
+                <input type="file" name="ImageFile" class="form-control" />
+            </div>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" name="IsActive" checked />
+                <label class="form-check-label">Activate Account</label>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Register</button>
+        }
+
+        <div class="text-center mt-3">
+            <small class="text-muted">Already have an account?</small>
+            <a href="@Url.Action("Login", "Account")" class="text-decoration-none text-primary">Login</a>
+        </div>
+    </div>
+</section>

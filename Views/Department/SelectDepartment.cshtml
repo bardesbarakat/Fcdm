@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "SelectDepartment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>SelectDepartment</h2>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.Label("اختر القسم")
+        @Html.DropDownList("departmentId", ViewBag.Departments as SelectList, "-- اختر القسم --", new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">إدخال</button>
+}
+

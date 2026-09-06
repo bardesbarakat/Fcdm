@@ -1,0 +1,26 @@
+﻿@{
+    var colleges = ViewBag.Colleges as List<SelectListItem>;
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <label for="collegeId" class="form-label">الكلية</label>
+        <select id="collegeId" name="collegeId" class="form-control">
+            <option value="">-- اختر الكلية --</option>
+            @foreach (var col in colleges)
+            {
+                <option value="@col.Value">@col.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label for="FromDate" class="form-label">من تاريخ</label>
+        <input type="date" id="FromDate" name="fromDate" class="form-control" />
+    </div>
+
+    <div class="col-md-4">
+        <label for="ToDate" class="form-label">إلى تاريخ</label>
+        <input type="date" id="ToDate" name="toDate" class="form-control" />
+    </div>
+</div>

@@ -1,0 +1,31 @@
+﻿@model cdm.Models.Conference
+
+@{
+    ViewBag.Title = "تأكيد الحذف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger shadow-sm">
+        <h5><i class="bi bi-exclamation-triangle-fill"></i> هل أنت متأكد من عملية الحذف؟</h5>
+        <p>العنوان: <strong>@Model.ConferenceTitle</strong></p>
+        <p>العضو: <strong>@Model.FacultyMember.FullName</strong></p>
+        <p>البلد: <strong>@Model.ConferenceCountry</strong></p>
+        <p>نوع الفعالية: <strong>@Model.ConferenceType</strong></p>
+
+        @using (Html.BeginForm("Delete", "Conferences", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> نعم، احذف
+                </button>
+                <a href="@Url.Action("Index", "Conferences")" class="btn btn-secondary">
+                    إلغاء
+                </a>
+            </div>
+        }
+    </div>
+</div>

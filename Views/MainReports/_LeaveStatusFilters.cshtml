@@ -1,0 +1,10 @@
+﻿@model int?
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label fw-bold">اختر الكلية:</label>
+        @Html.DropDownList("collegeId", ViewBag.Colleges as List<SelectListItem>, "-- اختر الكلية --", new { @class = "form-control" })
+    </div>
+</div>
+
+

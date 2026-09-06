@@ -1,0 +1,221 @@
+﻿@model cdm.Models.StudyLeaveMember
+
+@{
+    ViewBag.Title = "إدخال بيانات الإجازة الدراسية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+    if (ViewBag.MilitaryStatusList == null)
+    {
+        ViewBag.MilitaryStatusList = new SelectList(new List<string> { "مؤجل", "أدى الخدمة", "معفى" });
+    }
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white text-center">
+            <h4><i class="bi bi-journal-plus"></i> إدخال بيانات الإجازة الدراسية</h4>
+        </div>
+        <div class="card-body">
+            @if (faculty != null)
+            {
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <h4 class=" mb-3 text-primary"> البيانات الاساسية</h4>
+                        <div class="col-md-4">
+                            <strong>اسم عضو هيئة التدريس:</strong> @faculty.FullName
+                        </div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>رقم الهاتف:</strong> @faculty.PhoneNumber</div>
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم التأميني:</strong> @faculty.InsuranceNumber</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>النوع:</strong> @faculty.Gender
+                        </div>
+                        <div class="col-md-8"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    لا توجد بيانات لعضو هيئة التدريس.
+                </div>
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@err.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @using (Html.BeginForm("SaveStudyLeaveWithFiles", "StudyLeaveMembers", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <hr />
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.FacultyMemberID)
+                @Html.HiddenFor(m => m.DepartmentID)
+
+                <div class="form-group mb-3">
+                    <label>الاسم</label>
+                    <input class="form-control" value="@ViewBag.FacultyName" readonly />
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>الدرجة العلمية الحالية</label>
+                        @Html.TextBoxFor(m => m.CurrentAcademicDegree, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الموقف من التجنيد</label>
+                        @Html.DropDownListFor(m => m.MilitaryStatus, (SelectList)ViewBag.MilitaryStatusList, "-- اختر الموقف --", new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الدولة الموفد إليها</label>
+                        @Html.DropDownListFor(m => m.DestinationCountry, (SelectList)ViewBag.DestinationCountry, "-- اختر الدولة --", new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>اسم الجامعة</label>
+                        @Html.TextBoxFor(m => m.UniversityName, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>نوع الإجازة</label>
+                        @Html.TextBoxFor(m => m.LeaveType, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>آخر مؤهل</label>
+                        @Html.DropDownListFor(m => m.LastQualification, new SelectList(new List<string> { "ماجستير", "دكتوراه", "ليسانس", "بكالوريوس" }), "-- اختر المؤهل --", new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>العام الحالي للإجازة</label>
+                        @Html.TextBoxFor(m => m.CurrentYearOfLeave, new { @class = "form-control", required = "required", placeholder = "مثال: السنة الثانية" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الغرض من الإيفاد</label>
+                        @Html.TextBoxFor(m => m.LeavePurpose, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ إخلاء الطرف</label>
+                        @Html.TextBoxFor(m => m.ClearanceDateFromCollege, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>تاريخ السفر</label>
+                        @Html.TextBoxFor(m => m.TravelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>مدة الإيفاد</label>
+                        @Html.TextBoxFor(m => m.LeaveDuration, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>قيمة المنحة</label>
+                        @Html.TextBoxFor(m => m.GrantValue, new { @class = "form-control", required = "required", placeholder = "مثال: 10000 أو بدون منحة" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>رقم وتاريخ الموافقة الأمنية</label>
+                        @Html.TextBoxFor(m => m.SecurityApprovalNumberAndDate, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ موافقة مجلس الكلية</label>
+                        @Html.TextBoxFor(m => m.CollegeCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ موافقة اللجنة التنفيذية</label>
+                        @Html.TextBoxFor(m => m.ExecutiveCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">تاريخ موافقة رئيس الجامعة</label>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", style = "flex: 1;" })
+                            <input type="file" name="UniversityPresidentApprovalFile" required class="form-control" accept=".pdf" style="max-width: 300px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label>رقم وتاريخ القرار التنفيذي</label>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            @Html.TextBoxFor(m => m.UniversityExecutiveDecision, new { @class = "form-control", required = "required", style = "flex: 1;" })
+                            <input type="file" name="ExecutiveDecisionFile" class="form-control" required accept=".pdf" style="max-width: 300px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>نوع الإجازة (بمرتب / بدون مرتب)</label>
+                        @Html.TextBoxFor(m => m.SalaryStatus, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>مدة المنحة</label>
+                        @Html.TextBoxFor(m => m.GrantDuration, new { @class = "form-control", placeholder = "مثال: 12 شهر" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>اسم الضامن وصلة القرابة</label>
+                        @Html.TextBoxFor(m => m.GuarantorNameAndRelation, new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => m.ReturnMissionFormDate)
+                        @Html.TextBoxFor(m => m.ReturnMissionFormDate, new { @class = "form-control", type = "date" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => m.DiscussionDate)
+                        @Html.TextBoxFor(m => m.DiscussionDate, new { @class = "form-control", type = "date" })
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.WorkResumptionDate)
+                            @Html.TextBoxFor(m => m.WorkResumptionDate, new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3">
+                        <label class="form-label">ملفات إضافية (PDF فقط، يمكن اختيار أكثر من ملف)</label>
+                        <input type="file" name="AdditionalFiles" class="form-control" accept=".pdf" multiple />
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success mt-3 px-4">
+                            <i class="bi bi-save"></i> حفظ البيانات
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

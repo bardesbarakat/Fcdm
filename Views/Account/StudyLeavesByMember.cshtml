@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "StudyLeavesByMember";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@model IEnumerable<cdm.Models.StudyLeaveMember>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid full-height-container">
+    <div class="row flex-grow-1 pt-2">
+     
+
+        @Html.Partial("_LayoutSidebar")
+        <!-- محتوى القسم المختار -->
+        <div class="col-md-9" id="dashboardContent">
+            <h3>إجازات @Model.FirstOrDefault().FacultyMember.FullName</h3>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-warning">@ViewBag.Message</div>
+            }
+            else
+            {
+                <table class="table table-bordered table-hover text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>نوع الإجازة</th>
+                            <th>الدولة</th>
+                            <th>الجامعة</th>
+                            <th>تاريخ السفر</th>
+                            <th>مدة الإجازة</th>
+                            <th>الغرض</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var leave in Model)
+                        {
+                            <tr>
+                                <td>@leave.LeaveType</td>
+                                <td>@leave.DestinationCountry</td>
+                                <td>@leave.UniversityName</td>
+                                <td>@leave.TravelDate?.ToString("yyyy-MM-dd")</td>
+                                <td>@leave.LeaveDuration</td>
+                                <td>@leave.LeavePurpose</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div></div>

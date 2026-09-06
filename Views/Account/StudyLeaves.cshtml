@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "StudyLeaves";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<cdm.Models.StudyLeaveMember>
+
+<h4>الإجازات الدراسية</h4>
+<div class="container-fluid full-height-container">
+    <div class="row flex-grow-1 pt-2">
+
+        @Html.Partial("_LayoutSidebar")
+        <!-- محتوى القسم المختار -->
+        <div class="col-md-9" id="dashboardContent">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>عضو هيئة التدريس</th>
+                        <th>نوع الإجازة</th>
+                        <th>الدولة</th>
+                        <th>الجامعة</th>
+                        <th>تاريخ السفر</th>
+                        <th>مدة الإجازة</th>
+                        <th>الغرض</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var leave in Model)
+                    {
+                        <tr>
+                            <td>@(leave.FacultyMember != null ? leave.FacultyMember.FullName : "غير محدد")</td>
+                            <td>@leave.LeaveType</td>
+                            <td>@leave.DestinationCountry</td>
+                            <td>@leave.UniversityName</td>
+                            <td>@leave.TravelDate.ToString()</td>
+                            <td>@leave.LeaveDuration</td>
+                            <td>@leave.LeavePurpose</td>
+                            <td>
+                                <button class="btn btn-info btn-sm">تفاصيل</button>
+                                <button class="btn btn-warning btn-sm">تعديل</button>
+                                <button class="btn btn-danger btn-sm">حذف</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>  

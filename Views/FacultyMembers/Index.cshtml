@@ -1,0 +1,215 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@model IPagedList<cdm.Models.FacultyMember>
+
+@using System.Web
+@{
+    ViewBag.Title = "قائمة أعضاء هيئة التدريس";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center py-3 rounded-top">
+            <h2 class="mb-0 fw-bold">قائمة أعضاء هيئة التدريس</h2>
+            <small>إجمالي الأعضاء: <strong>@Model.TotalItemCount</strong></small>
+        </div>
+        <div class="card-body p-4 bg-light rounded-bottom">
+
+            @using (Html.BeginForm("Index", "FacultyMembers", FormMethod.Get, new { id = "filterForm" }))
+            {
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        @Html.DropDownList("collegeId", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "FilterCollegeID" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("departmentId", (SelectList)ViewBag.Departments, "-- اختر القسم --", new { @class = "form-control", id = "FilterDepartmentID" })
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">بحث</button>
+                    </div>
+                </div>
+            }
+
+            <table class="table table-hover table-bordered align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>الاسم</th>
+                        <th>الكلية</th>
+                        <th>القسم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>رقم الهاتف</th>
+                        <th style="width: 180px;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.FullName</td>
+                            <td>@item.College.CollegeName</td>
+                            <td>@item.CollegeDepartment.DepartmentName</td>
+                            <td>@item.Email</td>
+                            <td>@item.PhoneNumber</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-warning me-1 mb-1"
+                                        onclick="editMember(
+                                        @item.FacultyMemberID,
+                                        '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.FullName))',
+                                        @item.CollegeID,
+                                        @item.College_DepartmentID,
+                                        '@Html.Raw(HttpUtility.JavaScriptStringEncode(item.Email))',
+                                        '@item.PhoneNumber',
+                                        '@item.InsuranceNumber',
+                                        '@item.NationalID',
+                                        '@item.Gender',
+                                        '@(item.BirthDate.HasValue ? item.BirthDate.Value.ToString("yyyy-MM-dd") : "")',
+                                        '@(item.HireDate.HasValue ? item.HireDate.Value.ToString("yyyy-MM-dd") : "")')">
+                                    تعديل
+                                </button>
+
+                                @using (Html.BeginForm("Delete", "FacultyMembers", new { id = item.FacultyMemberID }, FormMethod.Post, new { onsubmit = "return confirm('هل أنت متأكد من حذف هذا العضو؟');" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger mb-1">حذف</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, collegeId = ViewBag.SelectedCollegeId, departmentId = ViewBag.SelectedDepartmentId }),
+                         new X.PagedList.Mvc.PagedListRenderOptions()
+                         {
+                             DisplayLinkToPreviousPage = X.PagedList.Mvc.PagedListDisplayMode.IfNeeded,
+                             DisplayLinkToNextPage = X.PagedList.Mvc.PagedListDisplayMode.IfNeeded,
+                             DisplayLinkToFirstPage = X.PagedList.Mvc.PagedListDisplayMode.Never,
+                             DisplayLinkToLastPage = X.PagedList.Mvc.PagedListDisplayMode.Never,
+                             MaximumPageNumbersToDisplay = 5,
+                             UlElementClasses = new[] { "pagination", "justify-content-center" },
+                             LiElementClasses = new[] { "page-item" }
+                         })
+            </nav>
+
+            <hr />
+
+            <div id="editFormContainer" style="display:none;" class="card bg-white p-4 rounded shadow-sm">
+                <h3 class="mb-4">تعديل عضو هيئة تدريس</h3>
+
+                @using (Html.BeginForm("Edit", "FacultyMembers", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="FacultyMemberID" id="FacultyMemberID" />
+
+                    <div class="mb-3">
+                        @Html.Label("الاسم", new { @class = "form-label" })
+                        @Html.TextBox("FullName", "", new { @class = "form-control", id = "FullName", placeholder = "الاسم الكامل" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("الكلية", new { @class = "form-label" })
+                        @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-select", id = "EditCollegeID" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("القسم", new { @class = "form-label" })
+                        @Html.DropDownList("College_DepartmentID", (SelectList)ViewBag.Departments, "-- اختر القسم --", new { @class = "form-select", id = "EditDepartmentID" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("البريد الإلكتروني", new { @class = "form-label" })
+                        @Html.TextBox("Email", "", new { @class = "form-control", id = "Email", placeholder = "example@example.com" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("رقم الهاتف", new { @class = "form-label" })
+                        @Html.TextBox("PhoneNumber", "", new { @class = "form-control", id = "PhoneNumber", placeholder = "رقم الهاتف" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("الرقم التأميني", new { @class = "form-label" })
+                        @Html.TextBox("InsuranceNumber", "", new { @class = "form-control", id = "InsuranceNumber" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("الرقم القومي", new { @class = "form-label" })
+                        @Html.TextBox("NationalID", "", new { @class = "form-control", id = "NationalID" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("الجنس", new { @class = "form-label" })
+                        @Html.DropDownList("Gender", new SelectList(new[] { "ذكر", "أنثى" }), "-- اختر --", new { @class = "form-select", id = "Gender" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("تاريخ الميلاد", new { @class = "form-label" })
+                        @Html.TextBox("BirthDate", "", new { @type = "date", @class = "form-control", id = "BirthDate" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.Label("تاريخ التعيين", new { @class = "form-label" })
+                        @Html.TextBox("HireDate", "", new { @type = "date", @class = "form-control", id = "HireDate" })
+                    </div>
+
+                    <button type="submit" class="btn btn-success">حفظ التعديلات</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        function editMember(id, name, collegeId, deptId, email, phone, insurance, nationalId, gender, birth, hire) {
+            document.getElementById("FacultyMemberID").value = id;
+            document.getElementById("FullName").value = name;
+            document.getElementById("EditCollegeID").value = collegeId;
+            document.getElementById("Email").value = email;
+            document.getElementById("PhoneNumber").value = phone;
+            document.getElementById("InsuranceNumber").value = insurance;
+            document.getElementById("NationalID").value = nationalId;
+            document.getElementById("Gender").value = gender;
+            document.getElementById("BirthDate").value = birth;
+            document.getElementById("HireDate").value = hire;
+
+            loadDepartments(collegeId, deptId, '#EditDepartmentID', true);
+
+            document.getElementById("editFormContainer").style.display = "block";
+            window.scrollTo(0, document.getElementById("editFormContainer").offsetTop - 20);
+        }
+
+        function loadDepartments(collegeId, selectedDeptId, deptSelector, preserveSelection) {
+            $.getJSON('@Url.Action("GetDepartmentsByCollege", "FacultyMembers")', { collegeId: collegeId }, function (data) {
+                var deptDropdown = $(deptSelector);
+                deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                $.each(data, function (i, item) {
+                    deptDropdown.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+                // ✅ لا تعيد تعيين القسم إذا لم يُطلب preserveSelection
+                if (preserveSelection && selectedDeptId) {
+                    deptDropdown.val(selectedDeptId);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#FilterCollegeID').change(function () {
+                var collegeId = $(this).val();
+                loadDepartments(collegeId, null, '#FilterDepartmentID', false);
+            });
+        });
+
+        // ✅ تحديث: دعم تغيير الكلية في نموذج التعديل حتى بعد ظهوره
+        $(document).on('change', '#EditCollegeID', function () {
+            var collegeId = $(this).val();
+            loadDepartments(collegeId, null, '#EditDepartmentID', false);
+        });
+    </script>
+  
+
+}

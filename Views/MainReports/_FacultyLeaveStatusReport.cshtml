@@ -1,0 +1,56 @@
+﻿@model List<cdm.Models.FacultyLeaveStatusReportVM>
+
+
+
+
+@{
+    var college = ViewBag.College;
+    int counter = 1;
+}
+
+<div class="text-center mb-4">
+    <h5 class="fw-bold text-decoration-underline">
+        بيان بيانات السادة أعضاء هيئة التدريس<br />
+        <span class="fw-normal">(إجازات دراسية – مهمات علمية – منح – بعثات – إجازات تفرغ)</span><br />
+        بالخارج والداخل
+    </h5>
+    <p>كليــــــــــــــــــــــة: <strong>@college</strong></p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center">لا توجد بيانات</div>
+}
+else
+{
+    <table class="table table-bordered text-center" dir="rtl">
+        <thead class="table-success">
+            <tr>
+                <th>م</th>
+                <th>الكلية</th>
+                <th>الاسم</th>
+                <th>الوظيفة</th>
+                <th>القسم</th>
+                <th>البلد</th>
+                <th>نوع الإفاد</th>
+                <th>العام الحالى في الاجازة</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.RowNumber</td>
+                    <td>@item.CollegeName</td>
+                    <td>@item.FullName</td>
+                    <td>@item.JobTitle</td>
+                    <td>@item.DepartmentName</td>
+                    <td>@item.Country</td>
+                    <td>@item.LeaveType</td>
+                    <td>@item.CurrentLeaveYear</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

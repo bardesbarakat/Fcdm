@@ -1,0 +1,146 @@
+﻿@model cdm.Models.SecondmentsData
+
+@{
+    ViewBag.Title = "تعديل إعارة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient text-white text-center" style="background: linear-gradient(to right, #007bff, #0056b3);">
+            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i> تعديل بيانات الإعارة</h4>
+        </div>
+
+        @using (Html.BeginForm("Edit", "Secondments", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ID)
+            @Html.HiddenFor(model => model.SecondmentsMemberId)
+
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.SecondmentsTypeId)
+                @Html.DropDownListFor(m => m.SecondmentsTypeId,
+                                      ViewBag.SecondmentsTypeId as SelectList,
+                                      "-- اختر نوع الإعارة --",
+                                 new { @class = "form-control", required = "required" })  <!-- ممكن تضيف required هنا كمان -->
+                @Html.ValidationMessageFor(m => m.SecondmentsTypeId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-6">
+                @Html.Label("عضو هيئة التدريس")
+                <input type="text" class="form-control" value="@Model.FacultyMember.FullName" disabled />
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecondmentsCountry)
+                @Html.DropDownListFor(m => m.SecondmentsCountry,
+                                      ViewBag.Countries as SelectList,
+                                      "-- اختر الدولة --",
+                                      new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecondmentsYear)
+                @Html.TextBoxFor(m => m.SecondmentsYear, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecondmentsStartDate)
+                @Html.TextBoxFor(m => m.SecondmentsStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecondmentsEndDate)
+                @Html.TextBoxFor(m => m.SecondmentsEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecurityApprovalNumber)
+                @Html.TextBoxFor(m => m.SecurityApprovalNumber, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.SecurityApprovalDate)
+                @Html.TextBoxFor(m => m.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.ClearanceDate)
+                @Html.TextBoxFor(m => m.ClearanceDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.UniversityDecisionNumber)
+                @Html.TextBoxFor(m => m.UniversityDecisionNumber, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.UniversityDecisionDate)
+                @Html.TextBoxFor(m => m.UniversityDecisionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div> <div class="col-md-4">
+                @Html.LabelFor(m => m.SecondmentLocation)
+                @Html.TextBoxFor(m => m.SecondmentLocation, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.ReturnWorkDate)
+                @Html.TextBoxFor(m => m.ReturnWorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+        </div><hr/>
+        <div class="row pt-5">
+            <div class="col-md-6">
+                @Html.Label("ملف موافقة رئيس الجامعة")
+
+                @if (!string.IsNullOrEmpty(Model.PresidentApprovalFile))
+                {
+                    var fileUrl = Url.Content("~" + Model.PresidentApprovalFile);
+                    var encodedUrl = HttpUtility.UrlPathEncode(fileUrl);
+
+                    <div class="mb-2">
+                        <span class="d-block text-muted">تحميل الملف الحالي:</span>
+                        <a href="@encodedUrl" target="_blank" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-file-earmark-arrow-down"></i> تحميل
+                        </a>
+                    </div>
+                }
+
+                <label class="form-label mt-2">تحميل ملف جديد</label>
+                <input type="file" name="PresidentApprovalUpload" accept=".pdf" class="form-control" />
+            </div>
+
+            <div class="col-md-6">
+                @Html.Label("مذكرة الاعتماد")
+
+                @if (!string.IsNullOrEmpty(Model.AccreditationMemo))
+                {
+                    var fileUrl2 = Url.Content("~" + Model.AccreditationMemo);
+                    var encodedUrl2 = HttpUtility.UrlPathEncode(fileUrl2);
+
+                    <div class="mb-2">
+                        <span class="d-block text-muted">تحميل الملف الحالي:</span>
+                        <a href="@encodedUrl2" target="_blank" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-file-earmark-arrow-down"></i> تحميل
+                        </a>
+                    </div>
+                }
+
+                <label class="form-label mt-2">تحميل ملف جديد</label>
+                <input type="file" name="AccreditationMemoUpload"  accept=".pdf" class="form-control" />
+            </div>
+        </div>
+
+
+       
+    </div>
+
+
+          
+            <div class="card-footer text-end">
+                <a href="@Url.Action("Index", "Secondments")" class="btn btn-secondary me-2">العودة</a>
+                <button type="submit" class="btn btn-success">حفظ التعديلات</button>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,25 @@
+﻿@model cdm.Models.User
+
+@{
+    ViewBag.Title = "تأكيد حذف المستخدم";
+}
+
+<h3 class="text-danger">هل أنت متأكد أنك تريد حذف هذا المستخدم؟</h3>
+
+<div class="alert alert-warning my-4">
+    <p>
+        الاسم الكامل: <strong>@Model.FullName</strong><br />
+        اسم المستخدم: <strong>@Model.Username</strong><br />
+        البريد الإلكتروني: <strong>@Model.Email</strong><br />
+        الدور: <strong>@Model.Role.RoleName</strong>
+    </p>
+</div>
+
+@using (Html.BeginForm("DeleteUserConfirmed", "Account", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.UserID)
+
+    <button type="submit" class="btn btn-danger">نعم، احذف</button>
+    <a href="@Url.Action("AdminDashboard", "Account")" class="btn btn-secondary">إلغاء</a>
+}

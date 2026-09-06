@@ -1,0 +1,43 @@
+@model IEnumerable<cdm.Models.Department>
+@{
+    ViewBag.Title = "الأقسام المسموح بها";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>الأقسام المسموح بها</h2>
+
+<div class="row justify-content-center">
+    @foreach (var dept in Model)
+    {
+        <div class="col-lg-3 col-md-4 m-1">
+            <div class="service-card">
+                <h4>@dept.DepartmentName</h4>
+
+                @switch (dept.DepartmentID)
+                {
+                    case 9:
+                        <a href="@Url.Action("Index", "Missions")" class="btn btn-primary btn-sm">البعثات</a>
+                        break;
+                    case 10:
+                        <a href="@Url.Action("Index", "Conferences")" class="btn btn-primary btn-sm">المؤتمرات</a>
+                        break;
+                    case 12:
+                        <a href="@Url.Action("Index", "Secondments")" class="btn btn-primary btn-sm">الإعارات</a>
+                        break;
+                    case 13:
+                        <a href="@Url.Action("Index", "ScientificMissions")" class="btn btn-primary btn-sm">المهمات العلمية</a>
+                        break;
+                    case 14:
+                        <a href="@Url.Action("InsertData", "Department", new { id = dept.DepartmentID })" class="btn btn-warning btn-sm">إجازات دراسية</a>
+                        break;
+                    case 16:
+                        <a href="@Url.Action("Index", "VisitingProfessors")" class="btn btn-primary btn-sm">الأساتذة الزائرين</a>
+                        break;
+                    default:
+                        <a href="@Url.Action("ViewData", "Department", new { id = dept.DepartmentID })" class="btn btn-outline-secondary btn-sm">عرض البيانات</a>
+                        break;
+                }
+            </div>
+        </div>
+    }
+</div>

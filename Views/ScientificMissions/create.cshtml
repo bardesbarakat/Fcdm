@@ -1,0 +1,201 @@
+﻿@model cdm.Models.ScientificMission
+
+@{
+    ViewBag.Title = "إضافة مهمة علمية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+}
+
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-secondary text-white text-center rounded-top" style="background: linear-gradient(to right, #1e3c72, #2a5298);">
+            <h4 class="mb-0 text-white text-center  d-flex justify-content-between align-items-center">
+                <span class=" text-white text-center rounded-top">
+                    <i class="bi bi-plus-circle me-2"></i> إضافة بيانات المهمه:
+                    @Model.MissionType
+                </span>
+
+            </h4>
+
+        </div>
+
+        <div class="p-4 rounded shadow-sm mb-4" style="background-color: #f8f9fa; border-left: 5px solid #0d6efd;">
+
+
+
+            @if (faculty != null)
+            {
+                <div class="alert alert-info">
+                    <div class="row g-3">
+                        <div class="col-md-4"><strong>الاسم:</strong> @faculty.FullName</div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                        <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                        <div class="col-md-4"><strong>رقم التواصل:</strong> @faculty.PhoneNumber</div>
+                        <div class="col-md-4"><strong>النوع:</strong> @faculty.Gender</div>
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                        <div class="col-md-4"><strong>رقم التأمين:</strong> @faculty.InsuranceNumber</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    لا توجد بيانات لعضو هيئة التدريس.
+                </div>
+            }
+
+            @using (Html.BeginForm("Create", "ScientificMissions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.FacultyMemberID)
+
+                @Html.HiddenFor(m => m.MissionType)
+
+                <div class="card p-3 shadow-sm">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.AcademicDegree)
+
+                            @Html.DropDownListFor(m => m.AcademicDegree, new SelectList(new[] {
+                                "معيد",
+                                "مدرس مساعد",
+                                "مدرس",
+                                "أستاذ مساعد",
+                                "أستاذ",  "أستاذ متفرغ"
+                            }), "-- اختر الدرجة العلمية --", new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.AcademicDegree, "", new { @class = "text-danger" })
+
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.MilitaryStatus)
+                            @Html.DropDownListFor(m => m.MilitaryStatus, ViewBag.MilitaryStatusList as SelectList, "-- اختر --", new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.Country)
+                            @Html.DropDownListFor(m => m.Country, ViewBag.Country as SelectList, "-- اختر الدولة --", new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.MissionLocation)
+                            @Html.TextBoxFor(m => m.MissionLocation, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.MissionPurpose)
+                            @Html.TextBoxFor(m => m.MissionPurpose, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.CurrentYearOfMission)
+                            @Html.TextBoxFor(m => m.CurrentYearOfMission, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.ClearanceDateFromCollege)
+                            @Html.TextBoxFor(m => m.ClearanceDateFromCollege, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.TravelDate)
+                            @Html.TextBoxFor(m => m.TravelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.SecurityApprovalNumberAndDate)
+                            @Html.TextBoxFor(m => m.SecurityApprovalNumberAndDate, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4" id="executiveCommitteeApprovalSection">
+                            @Html.LabelFor(m => m.ExecutiveCommitteeApprovalDate)
+                            @Html.TextBoxFor(m => m.ExecutiveCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.ExecutiveCommitteeApprovalDate)
+                            @Html.TextBoxFor(m => m.ExecutiveCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.UniversityPresidentApprovalDate)
+                            @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.ExecutiveDecisionNumberAndDate)
+                            @Html.TextBoxFor(m => m.ExecutiveDecisionNumberAndDate, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.LeaveType)
+                            @Html.TextBoxFor(m => m.LeaveType, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.GuarantorName)
+                            @Html.TextBoxFor(m => m.GuarantorName, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.WorkResumptionDate)
+                            @Html.TextBoxFor(m => m.WorkResumptionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4" id="returnMissionFormDateSection">
+                            @Html.LabelFor(m => m.ReturnMissionFormDate)
+                            @Html.TextBoxFor(m => m.ReturnMissionFormDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.UniversityPresidentDecisionFileUpload, "ملف قرار رئيس الجامعة")
+                            <input type="file" name="UniversityPresidentDecisionFileUpload" class="form-control" accept="application/pdf" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.AccreditationMemoFileUpload, "ملف مذكرة الاعتماد")
+                            <input type="file" name="AccreditationMemoFileUpload" class="form-control" accept="application/pdf" required />
+                        </div>
+
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="bi bi-save"></i> حفظ المهمة
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary px-4">
+                            <i class="bi bi-arrow-left-circle"></i> إلغاء
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var missionType = "@Model.MissionType".trim();
+
+            if (missionType === "شخصية") {
+                // إخفاء الحقول المحددة
+                document.getElementById("executiveCommitteeApprovalSection").style.display = "none";
+                document.getElementById("returnMissionFormDateSection").style.display = "none";
+
+                // إزالة required لو فيه
+                var execDateInput = document.querySelector("#executiveCommitteeApprovalSection input");
+                if (execDateInput) execDateInput.removeAttribute("required");
+            }
+        });
+    </script>
+}

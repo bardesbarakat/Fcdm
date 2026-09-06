@@ -1,0 +1,44 @@
+﻿@model cdm.Models.Participation
+
+@{
+    ViewBag.Title = "تأكيد حذف المشاركة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">⚠️ تأكيد الحذف</h4>
+        </div>
+        <div class="card-body">
+            <p>هل أنت متأكد أنك تريد حذف هذه المشاركة؟</p>
+
+            <dl class="row">
+                <dt class="col-sm-3">اسم عضو هيئة التدريس</dt>
+                <dd class="col-sm-9">@Model.FacultyMember.FullName</dd>
+
+                <dt class="col-sm-3">نوع المشاركة</dt>
+                <dd class="col-sm-9">@Model.ParticipationType</dd>
+
+                <dt class="col-sm-3">مكان الانعقاد</dt>
+                <dd class="col-sm-9">@Model.Location</dd>
+
+                <dt class="col-sm-3">الفترة</dt>
+                <dd class="col-sm-9">@Model.Period</dd>
+            </dl>
+
+            @using (Html.BeginForm("Delete", "Participations", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id)
+
+                <div class="text-center mt-4">
+                    <input type="submit" value="🗑 حذف نهائي" class="btn btn-danger me-2" />
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">رجوع للقائمة</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+

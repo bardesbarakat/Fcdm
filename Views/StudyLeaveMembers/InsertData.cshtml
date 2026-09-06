@@ -1,0 +1,288 @@
+﻿@model cdm.Models.StudyLeaveMember
+@using cdm.Helpers
+
+@{
+    ViewBag.Title = "تحديد عضو هيئة التدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .leave-type-card {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+        .leave-type-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .leave-type-card.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+        }
+
+    .is-invalid {
+        border: 2px solid red !important;
+    }
+</style>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+     
+        <div class="card-body bg-light p-4">
+
+            <!-- ✅ اختيار نوع الإجازة -->
+            <div class="mb-5 text-center">
+                <!-- ✅ اختيار نوع الإجازة -->
+                <div class="mb-5 text-center">
+                    <h5 class="mb-4 fw-bold">اختر نوع الإجازة أولاً</h5>
+                    <div class="row justify-content-center g-3">
+
+
+                        <div class="col-md-3 mx-2">
+                            <div class="card leave-type-card h-100" data-type="أجازات دراسية">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-journal-bookmark display-4 mb-3 text-primary"></i>
+
+                                    <h5 class="card-title">أجازات دراسية</h5>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3 mx-2">
+                            <div class="card leave-type-card h-100" data-type="أجازة دراسية للتدريب مابعد الدكتوراه">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-mortarboard display-4 mb-3 text-success"></i>
+
+                                    <h5 class="card-title">أجازة دراسية للتدريب مابعد الدكتوراه</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 mx-2">
+                            <div class="card leave-type-card h-100" data-type="أجازة  للتدريب">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-person-workspace display-4 mb-3 text-warning"></i>
+
+                                    <h5 class="card-title">أجازة  للتدريب</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" id="LeaveType" name="LeaveType" value="" />
+                    <div id="leaveTypeError" class="text-danger small mt-2"></div>
+                </div>
+
+            </div>
+        </div>
+        <div id="selectionSection" style="display:none">
+
+
+
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white text-center" style="background: linear-gradient(90deg, #007cf0, #00dfd8); border-radius: 0.5rem 0.5rem 0 0;">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i> اختيار عضو هيئة التدريس</h4>
+                </div>
+
+
+
+                <div class="card-body bg-light p-4">
+                    <h5 class="text-center mb-4">يرجى اختيار الكلية، القسم، الدرجة الوظيفية، ثم عضو هيئة التدريس لإضافة إجازة دراسية</h5>
+
+
+
+
+
+                    @using (Html.BeginForm("InsertStudyLeave", "StudyLeaveMembers", FormMethod.Post, new { id = "facultyForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">الكلية</label>
+                                <span id="collegeError" class="text-danger small d-block"></span>
+                                @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "collegeDropdown" })
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">القسم</label>
+                                <span id="deptError" class="text-danger small d-block"></span>
+                                @Html.DropDownList("DepartmentID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر القسم --", new { @class = "form-control", id = "departmentDropdown" })
+
+
+
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الدرجة الوظيفية</label>
+                                <span id="jobError" class="text-danger small d-block"></span>
+                                @Html.DropDownList("JobTitleID", (SelectList)ViewBag.JobTitles, "-- اختر الدرجة الوظيفية --", new { @class = "form-control", id = "jobTitleDropdown" })
+
+
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <label class="form-label">عضو هيئة التدريس</label>
+                            <span id="facultyError" class="text-danger small d-block"></span>
+                            @Html.DropDownListFor(model => model.FacultyMemberID, new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-control", id = "facultyDropdown" })
+                        </div>
+
+                        <div class="form-group mt-4 text-center">
+
+                            <!-- زر استمرار وحده -->
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg mx-2">
+                                    <i class="bi bi-arrow-left-circle"></i> استمرار
+                                </button>
+                            </div>
+
+                            <!-- أزرار الأعضاء -->
+                            <div class="pt-3 border-top d-inline-block">
+                                <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary btn-lg mx-2">
+                                    <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                                </a>
+                                <a href="../FacultyMembers/Index" class="btn btn-lg btn-outline-primary mx-2 d-inline-flex align-items-center">
+                                    <i class="bi bi-people-fill me-2"></i> إدارة أعضاء هيئة التدريس
+                                </a>
+                            </div>
+
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            // ✅ عند اختيار نوع الإجازة (الكارد)
+            $(".leave-type-card").click(function () {
+                $(".leave-type-card").removeClass("selected");
+                $(this).addClass("selected");
+
+                var selectedType = $(this).data("type");
+                $("#LeaveType").val(selectedType);
+                $("#leaveTypeError").text("");
+
+                $("#selectionSection").slideDown(); // ✅ إظهار الجزء التالي
+            });
+
+            // ✅ تحميل الدرجات الوظيفية
+            loadJobTitles();
+
+            function loadJobTitles() {
+                $.get('@Url.Action("GetAllJobTitles", "StudyLeaveMembers")', function (data) {
+                    let dropdown = $("#jobTitleDropdown");
+                    dropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+                    $.each(data, function (i, item) {
+                        dropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            }
+
+            // ✅ عند تغيير الكلية
+            $("#collegeDropdown").change(function () {
+                var collegeId = $(this).val();
+                if (collegeId) {
+                    $.get('@Url.Action("GetDepartmentsByCollege", "StudyLeaveMembers")', { collegeId: collegeId }, function (data) {
+                        let deptDropdown = $("#departmentDropdown");
+                        deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                        $.each(data, function (i, item) {
+                            deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                        });
+                    });
+                } else {
+                    $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+                }
+            });
+
+            // ✅ عند اختيار القسم والدرجة، جلب أعضاء هيئة التدريس
+            $("#departmentDropdown, #jobTitleDropdown").change(function () {
+                let deptId = $("#departmentDropdown").val();
+                let jobTitleId = $("#jobTitleDropdown").val();
+                if (!deptId || !jobTitleId) return;
+
+                $.get('@Url.Action("GetFacultyByDeptAndTitle", "StudyLeaveMembers")', { departmentId: deptId, jobTitleId: jobTitleId }, function (data) {
+                    let facultyDropdown = $("#facultyDropdown");
+                    facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                    $.each(data, function (i, item) {
+                        facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            });
+
+            // ✅ التحقق عند الإرسال
+            $("#facultyForm").submit(function (e) {
+                let leaveType = $("#LeaveType").val();
+                let college = $("#collegeDropdown").val();
+                let dept = $("#departmentDropdown").val();
+                let job = $("#jobTitleDropdown").val();
+                let faculty = $("#facultyDropdown").val();
+
+                let isValid = true;
+
+                if (!leaveType) {
+                    $("#leaveTypeError").text("يرجى اختيار نوع الإجازة");
+                    isValid = false;
+                }
+
+                if (!college) {
+                    $("#collegeError").text("يرجى اختيار الكلية");
+                    $("#collegeDropdown").addClass("is-invalid");
+                    isValid = false;
+                } else {
+                    $("#collegeError").text("");
+                    $("#collegeDropdown").removeClass("is-invalid");
+                }
+
+                if (!dept) {
+                    $("#deptError").text("يرجى اختيار القسم");
+                    $("#departmentDropdown").addClass("is-invalid");
+                    isValid = false;
+                } else {
+                    $("#deptError").text("");
+                    $("#departmentDropdown").removeClass("is-invalid");
+                }
+
+                if (!job) {
+                    $("#jobError").text("يرجى اختيار الدرجة الوظيفية");
+                    $("#jobTitleDropdown").addClass("is-invalid");
+                    isValid = false;
+                } else {
+                    $("#jobError").text("");
+                    $("#jobTitleDropdown").removeClass("is-invalid");
+                }
+
+                if (!faculty) {
+                    $("#facultyError").text("يرجى اختيار عضو هيئة التدريس");
+                    $("#facultyDropdown").addClass("is-invalid");
+                    isValid = false;
+                } else {
+                    $("#facultyError").text("");
+                    $("#facultyDropdown").removeClass("is-invalid");
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
+
+
+
+
+<style>
+    .is-invalid {
+        border: 2px solid red !important;
+    }
+</style>

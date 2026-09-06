@@ -1,0 +1,42 @@
+﻿@model cdm.Models.FacultyMember
+@{
+    ViewBag.Title = "حذف عضو هيئة تدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2>هل أنت متأكد من حذف هذا العضو؟</h2>
+
+            <div>
+                <h4>@Model.FullName</h4>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>الكلية</dt>
+                    <dd>@Model.College?.CollegeName</dd>
+
+                    <dt>القسم</dt>
+                    <dd>@Model.CollegeDepartment?.DepartmentName</dd>
+
+                    <dt>البريد الإلكتروني</dt>
+                    <dd>@Model.Email</dd>
+
+                    <dt>رقم الهاتف</dt>
+                    <dd>@Model.PhoneNumber</dd>
+
+                    <dt>الرقم القومي</dt>
+                    <dd>@Model.NationalID</dd>
+                </dl>
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.FacultyMemberID" />
+                    <button type="submit" class="btn btn-danger">تأكيد الحذف</button>
+                    @Html.ActionLink("إلغاء", "Index", null, new { @class = "btn btn-default" })
+                }
+            </div>
+        </div>
+    </div>
+</div>

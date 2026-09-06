@@ -1,0 +1,136 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "بحث تفصيلي عن عضو هيئة تدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h3>بحث تفصيلي عن عضو هيئة تدريس</h3>
+
+            <div class="form-group">
+                <label>الكلية:</label>
+                @Html.DropDownList("CollegeID", (IEnumerable<SelectListItem>)ViewBag.Colleges, "-- اختر الكلية --",
+                          new { @class = "form-control", onchange = "loadDepartments(this.value)" })
+            </div>
+
+            <div class="form-group mt-3">
+                <label>القسم:</label>
+                <select id="DepartmentID" class="form-control" onchange="loadFacultyMembers()">
+                    <option>-- اختر القسم --</option>
+                </select>
+            </div>
+
+            <div class="form-group mt-3">
+                <label>الدرجة الوظيفية:</label>
+                <select id="JobTitleID" class="form-control" onchange="loadFacultyMembers()">
+                    <option>-- اختر الدرجة --</option>
+                </select>
+            </div>
+
+            <div class="form-group mt-3">
+                <label>عضو هيئة التدريس:</label>
+                <select id="FacultyMemberID" class="form-control">
+                    <option>-- اختر العضو --</option>
+                </select>
+            </div>
+
+            <div id="facultyDetailsContainer" class="mt-4" style="display:none;">
+                <h5>بيانات عضو هيئة التدريس:</h5>
+                <table class="table table-bordered">
+                    <tr><th>الاسم</th><td id="f-name"></td></tr>
+                    <tr><th>البريد</th><td id="f-email"></td></tr>
+                    <tr><th>الهاتف</th><td id="f-phone"></td></tr>
+                    <tr><th>الرقم القومي</th><td id="f-nid"></td></tr>
+                    <tr><th>تاريخ التعيين</th><td id="f-hire"></td></tr>
+                </table>
+                <a id="printPdfBtn" href="#" class="btn btn-outline-primary mt-2" target="_blank" style="display:none;">
+                    <i class="bi bi-file-earmark-pdf"></i> طباعة PDF
+                </a>
+            </div>
+
+            <div id="loader" style="display:none;" class="mt-3">
+                <img src="/Content/loader.gif" width="30" /> جاري التحميل...
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            loadJobTitles();
+        });
+
+        function loadDepartments(collegeId) {
+            $('#DepartmentID').html('<option>-- اختر القسم --</option>');
+            $('#FacultyMemberID').html('<option>-- اختر العضو --</option>');
+            $('#facultyDetailsContainer').hide();
+
+            if (!collegeId) return;
+
+            $('#loader').show();
+            $.get('/College/GetDepartmentsByCollege', { collegeId: collegeId }, function (data) {
+                var deptDropdown = $('#DepartmentID');
+                deptDropdown.empty().append('<option>-- اختر القسم --</option>');
+                $.each(data, function (i, dept) {
+                    deptDropdown.append('<option value="' + dept.Value + '">' + dept.Text + '</option>');
+                });
+                $('#loader').hide();
+            });
+        }
+
+        function loadJobTitles() {
+            $('#loader').show();
+            $.get('/College/GetAllJobTitles', function (data) {
+                var jobTitleDropdown = $('#JobTitleID');
+                jobTitleDropdown.empty().append('<option>-- اختر الدرجة --</option>');
+                $.each(data, function (i, title) {
+                    jobTitleDropdown.append('<option value="' + title.Value + '">' + title.Text + '</option>');
+                });
+                $('#loader').hide();
+            });
+        }
+
+        function loadFacultyMembers() {
+            var deptId = $('#DepartmentID').val();
+            var jobTitleId = $('#JobTitleID').val();
+            $('#FacultyMemberID').html('<option>-- اختر العضو --</option>');
+            $('#facultyDetailsContainer').hide();
+
+            if (!deptId || !jobTitleId) return;
+
+            $('#loader').show();
+            $.get('/College/GetFacultyByDeptAndTitle', {
+                departmentId: deptId,
+                jobTitleId: jobTitleId
+            }, function (data) {
+                var facultyDropdown = $('#FacultyMemberID');
+                facultyDropdown.empty().append('<option>-- اختر العضو --</option>');
+                $.each(data, function (i, m) {
+                    facultyDropdown.append('<option value="' + m.Value + '">' + m.Text + '</option>');
+                });
+                $('#loader').hide();
+            });
+        }
+
+        $('#FacultyMemberID').change(function () {
+            var memberId = $(this).val();
+            if (!memberId) return;
+
+            $('#loader').show();
+            $.get('/College/GetFacultyDetails', { id: memberId }, function (data) {
+                $('#f-name').text(data.FullName);
+                $('#f-email').text(data.Email);
+                $('#f-phone').text(data.PhoneNumber);
+                $('#f-nid').text(data.NationalID);
+                $('#f-hire').text(data.HireDate);
+
+                $('#printPdfBtn').attr("href", "/College/PrintFacultyPdf?id=" + memberId).show();
+                $('#facultyDetailsContainer').show();
+                $('#loader').hide();
+            });
+        });
+    </script>
+}

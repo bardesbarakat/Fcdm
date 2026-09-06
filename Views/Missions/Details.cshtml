@@ -1,0 +1,176 @@
+﻿@model cdm.Models.MissionWithFacultyVM
+
+@{
+    ViewBag.Title = "تفاصيل البعثة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var type = Model.Mission.MainMissionType;
+}
+
+<style media="print">
+    .no-print, header, footer, .navbar, .sidebar, .btn, .print-button, .back-button {
+        display: none !important;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-family: "Arial", sans-serif !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    table, tr, td, th {
+        page-break-inside: avoid !important;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-eye-fill"></i> تفاصيل البعثة</h4>
+        </div>
+        <div class="card-body">
+            <h4 class="mt-4 mb-3 text-primary">البيانات الأساسية لعضو هيئة التدريس</h4>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>الاسم:</strong> @Model.Faculty.FullName</div>
+                <div class="col-md-4"><strong>الكلية:</strong> @Model.Faculty.College.CollegeName</div>
+                <div class="col-md-4"><strong>القسم:</strong> @Model.Faculty.CollegeDepartment.DepartmentName</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.Faculty.NationalID</div>
+                <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.Faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.Faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.Faculty.PhoneNumber</div>
+                <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @Model.Faculty.Email</div>
+                <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.Faculty.JobTitle.JobTitleName</div>
+            </div>
+
+            <hr />
+
+            <h4 class="mt-4 mb-3 text-primary">تفاصيل البعثة</h4>
+            <div class="row mb-3">
+                <div class="col-md-3"><strong>نوع البعثة:</strong> @Model.Mission.MainMissionType</div>
+
+                <div class="col-md-3"><strong>اسم الجامعة:</strong> @Model.Mission.UniversityName</div>
+                <div class="col-md-3"><strong>تاريح المناقشة:</strong> @Model.Mission.DiscussionDate</div>
+
+                <div class="col-md-3"><strong>الدولة:</strong> @Model.Mission.Country</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3"><strong>الغرض من البعثة:</strong> @Model.Mission.MissionPurpose</div>
+                <div class="col-md-3"><strong>السنة الحالية:</strong> @Model.Mission.MissionCurrentYear</div>
+                <div class="col-md-3"><strong>مدة البعثة:</strong> @Model.Mission.MissionDuration</div>
+                <div class="col-md-3"><strong>تاريخ السفر:</strong> @Model.Mission.TravelDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3"><strong>تاريخ إخلاء الطرف:</strong> @Model.Mission.DepartureClearanceDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-3"><strong>رقم الموافقة الأمنية:</strong> @Model.Mission.SecurityApprovalNo</div>
+                <div class="col-md-3"><strong>تاريخ الموافقة الأمنية:</strong> @Model.Mission.SecurityApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-3"><strong>نوع الإجازة:</strong> @Model.Mission.VacationType</div>
+            </div>
+
+
+
+            @if (type != "بعثات خارجية" && type != "بعثات داخلية")
+            {
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>تاريخ موافقة رئيس الجامعة على إقامة قناة علمية بين الجامعتين:</strong><br />
+                        @(
+                Model.Mission.UniPresidentChannelApprovalDate.HasValue
+                ? Model.Mission.UniPresidentChannelApprovalDate.Value.ToString("yyyy-MM-dd")
+                : "غير متوفر"
+            )
+                    </div>
+
+                    <div class="col-md-4">
+                        @if (!string.IsNullOrEmpty(Model.Mission.UniPresidentChannelFile))
+                        {
+                            <strong>ملف القناة العلمية:</strong>
+                            <a href="@Url.Content("~" + Model.Mission.UniPresidentChannelFile)" target="_blank" class="btn btn-sm btn-outline-info">عرض</a>
+                        }
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>مدة الدراسة داخل البلاد:</strong>
+                        @Model.Mission.StudyDurationInside
+                    </div>
+
+                    <div class="col-md-4 pt-4">
+                        <strong>مدة الدراسة خارج البلاد:</strong>
+                        @Model.Mission.StudyDurationOutside
+                    </div>
+                </div>
+            }
+
+
+
+            <div class="row mb-3">
+                <div class="col-md-3"><strong>القيمة:</strong> @Model.Mission.MissionValue</div>
+                <div class="col-md-3"><strong>تاريخ موافقة مجلس الكلية:</strong> @Model.Mission.FacultyCouncilApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-3"><strong>تاريخ اللجنة التنفيذية:</strong> @Model.Mission.ExecCommitteeApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+                <div class="col-md-3"><strong>تاريخ موافقة رئيس الجامعة:</strong> @Model.Mission.UniversityPresidentApprovalDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>رقم قرار اللجنة:</strong> @Model.Mission.ExecDecisionNo</div>
+                <div class="col-md-4"><strong>تاريخ قرار اللجنة:</strong> @Model.Mission.ExecDecisionDate.Value.ToString("yyyy-MM-dd")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.Mission.UniPresidentDecisionFile))
+                    {
+                        <strong>ملف قرار رئيس الجامعة:</strong>
+                        <a href="@Url.Content("~" + Model.Mission.UniPresidentDecisionFile)" target="_blank" class="btn btn-sm btn-outline-info">عرض</a>
+                    }
+                </div>
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.Mission.AccreditationMemoFile))
+                    {
+                        <strong>مذكرة الاعتماد:</strong>
+                        <a href="@Url.Content("~" + Model.Mission.AccreditationMemoFile)" target="_blank" class="btn btn-sm btn-outline-info">عرض</a>
+                    }
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4"><strong>اسم الضامن:</strong> @Model.Mission.GuarantorName</div>
+                <div class="col-md-4">
+                    <strong>تاريخ استمارة مبعوث عائد:</strong>
+                    @(Model.Mission.ReturneeFormDate?.ToString("yyyy-MM-dd") ?? "لا يوجد")
+
+                </div>
+
+                <div class="col-md-4">
+                    <strong>تاريخ استلام العمل:</strong>
+                    @(Model.Mission.WorkResumptionDate?.ToString("yyyy-MM-dd") ?? "لا يوجد")
+                </div>
+
+            </div>
+        </div>
+
+            <div class="card-footer text-center">
+                <a href="@Url.Action("Index", "Missions")" class="btn btn-secondary mx-2">رجوع إلى القائمة</a>
+                <button type="button" onclick="window.print()" class="btn btn-outline-secondary mx-2">🖨️ طباعة</button>
+            </div>
+        </div>
+</div>

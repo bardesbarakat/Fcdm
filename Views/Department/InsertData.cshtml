@@ -1,0 +1,129 @@
+﻿@model cdm.Models.StudyLeaveMember
+@using cdm.Helpers
+
+@{
+    ViewBag.Title = "تحديد عضو هيئة التدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient text-white text-center" style="background: linear-gradient(90deg, #007cf0, #00dfd8); border-radius: 0.5rem 0.5rem 0 0;">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i> اختيار عضو هيئة التدريس</h4>
+        </div>
+        <div class="card-body bg-light p-4">
+            <h5 class="text-center mb-4">يرجى اختيار الكلية، القسم، الدرجة الوظيفية، ثم عضو هيئة التدريس لإضافة إجازة دراسية</h5>
+
+            @using (Html.BeginForm("InsertStudyLeave", "StudyLeaveMembers", FormMethod.Post, new { id = "facultyForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">الكلية</label>
+                        <span id="collegeError" class="text-danger small d-block"></span>
+                        @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "collegeDropdown" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">القسم</label>
+                        <span id="deptError" class="text-danger small d-block"></span>
+                        <select id="departmentDropdown" class="form-control"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">الدرجة الوظيفية</label>
+                        <span id="jobError" class="text-danger small d-block"></span>
+                        <select id="jobTitleDropdown" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label class="form-label">عضو هيئة التدريس</label>
+                    <span id="facultyError" class="text-danger small d-block"></span>
+                    @Html.DropDownListFor(model => model.FacultyMemberID, new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-control", id = "facultyDropdown" })
+                </div>
+
+                <div class="form-group mt-4 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg mx-2">
+                        <i class="bi bi-arrow-right-circle"></i> استمرار
+                    </button>
+                    <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary btn-lg mx-2">
+                        <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            loadJobTitles();
+        });
+        $.get('@Url.Action("GetAllJobTitles", "StudyLeaveMembers")', function (data) {
+
+        function loadJobTitles() {
+            $.get('@Url.Action("GetAllJobTitles", "StudyLeaveMembers")', function (data) {
+                let dropdown = $("#jobTitleDropdown");
+                dropdown.empty().append('<option value="">-- اختر الدرجة --</option>');
+                $.each(data, function (i, item) {
+                    dropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+            });
+        }
+
+        $("#collegeDropdown").change(function () {
+            var collegeId = $(this).val();
+            $.get('@Url.Action("GetDepartmentsByCollege", "StudyLeaveMembers")', { collegeId }, function (data) {
+                let deptDropdown = $("#departmentDropdown");
+                deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                $.each(data, function (i, item) {
+                    deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+            });
+        });
+
+        $("#departmentDropdown, #jobTitleDropdown").change(function () {
+            let deptId = $("#departmentDropdown").val();
+            let jobTitleId = $("#jobTitleDropdown").val();
+            if (!deptId || !jobTitleId) return;
+
+            $.get('@Url.Action("GetFacultyByDeptAndTitle", "StudyLeaveMembers")', { departmentId: deptId, jobTitleId }, function (data) {
+                let facultyDropdown = $("#facultyDropdown");
+                facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                $.each(data, function (i, item) {
+                    facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+            });
+        });
+
+        document.getElementById("facultyForm").addEventListener("submit", function (e) {
+            let college = $("#collegeDropdown").val();
+            let dept = $("#departmentDropdown").val();
+            let job = $("#jobTitleDropdown").val();
+            let faculty = $("#facultyDropdown").val();
+
+            if (!college || !dept || !job || !faculty) {
+                alert("يرجى اختيار الكلية، القسم، الدرجة الوظيفية، وعضو هيئة التدريس قبل المتابعة.");
+
+                $("#collegeError").text(college ? "" : "يرجى اختيار الكلية");
+                $("#deptError").text(dept ? "" : "يرجى اختيار القسم");
+                $("#jobError").text(job ? "" : "يرجى اختيار الدرجة الوظيفية");
+                $("#facultyError").text(faculty ? "" : "يرجى اختيار عضو هيئة التدريس");
+
+                $("#collegeDropdown").toggleClass("is-invalid", !college);
+                $("#departmentDropdown").toggleClass("is-invalid", !dept);
+                $("#jobTitleDropdown").toggleClass("is-invalid", !job);
+                $("#facultyDropdown").toggleClass("is-invalid", !faculty);
+
+                e.preventDefault();
+            }
+        });
+    </script>
+}
+
+<style>
+    .is-invalid {
+        border: 2px solid red !important;
+    }
+</style>

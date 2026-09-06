@@ -1,0 +1,11 @@
+﻿
+@{
+    Layout = null;
+}
+
+<div class="row g-3 mt-3">
+    <div class="col-md-6">
+        <label for="collegeId" class="form-label fw-bold">الكلية</label>
+        @Html.DropDownList("collegeId", ViewBag.Colleges as List<SelectListItem>, "-- الكل --", new { @class = "form-control" })
+    </div>
+</div>

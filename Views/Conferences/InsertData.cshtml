@@ -1,0 +1,412 @@
+﻿@model cdm.Models.Conference
+@using cdm.Helpers
+@{
+    ViewBag.Title = "إضافة مشاركة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .type-card {
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+        .type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+</style>
+
+
+
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient text-white text-center"
+             style="background: linear-gradient(135deg, #e3a127, #d89114);" >
+            <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2 "></i> اختيار نوع المشاركة</h5>
+        </div>
+
+        <div class="card-body bg-light px-4 py-5">
+            <div class="row g-4 justify-content-center" id="typeCards">
+                <div class="col-6 col-md-2">
+                  <div class="card type-card text-white text-center"
+              style="background: linear-gradient(135deg, #e3a127, #d89114);" onclick="setSelectedType('ConferenceInternal')">
+                        <div class="card-body py-4">
+                            <i class="bi bi-building fw-bold fs-3 mb-2 d-block card-icon"></i>
+                            <h5 class="mb-0 text-white">مؤتمر داخلي</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="card type-card text-white text-center"
+                       style="background: linear-gradient(135deg, #e3a127, #d89114);" onclick="setSelectedType('ConferenceExternal')">
+                        <div class="card-body py-4">
+                            <i class="bi bi-globe fw-bold fs-3 mb-2 d-block card-icon card-icon"></i>
+                            <h5 class="mb-0 text-white">مؤتمر خارجي</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="card type-card text-white text-center"
+                        style="background: linear-gradient(135deg, #e3a127, #d89114);" onclick="setSelectedType('Workshop')">
+                        <div class="card-body py-4">
+                            <i class="bi bi-tools fw-bold fs-3 mb-2 d-block card-icon"></i>
+                            <h5 class="mb-0 text-white">ورشة عمل</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="card type-card text-white text-center"
+                        style="background: linear-gradient(135deg, #e3a127, #d89114);" onclick="setSelectedType('Training')">
+                        <div class="card-body py-4">
+                            <i class="bi bi-journal-code fw-bold fs-3 mb-2 d-block card-icon"></i>
+                            <h5 class="mb-0 text-white">دورة تدريبية</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="card type-card text-white text-center"
+                        style="background: linear-gradient(135deg, #e3a127, #d89114);" onclick="setSelectedType('Meeting')">
+                        <div class="card-body py-4">
+                            <i class="bi bi-people fw-bold fs-3 mb-2 d-block card-icon"></i>
+                            <h5 class="mb-0 text-white">اجتماع</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="selectionSection" style="display:none;" class="mt-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white text-center  " style="background: linear-gradient(135deg, rgb(227, 161, 39), rgb(180, 100, 20)); ">
+                <h5 class="mb-0 fw-bold text-white"><i class="bi bi-person-lines-fill me-2"></i> اختيار عضو هيئة التدريس</h5>
+            </div>
+
+            <div class="card-body p-4 bg-white">
+                <form id="facultyForm" onsubmit="return false;">
+                    @Html.Hidden("SelectedType", "", new { id = "HiddenTypeId" })
+                    @Html.Hidden("SelectedFaculty", "", new { id = "HiddenMemberId" })
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">الكلية</label>
+                            <span id="collegeError" class="text-danger small"></span>
+                            @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-select", id = "collegeDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">القسم</label>
+                            <span id="deptError" class="text-danger small"></span>
+                            @Html.DropDownList("DepartmentID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر القسم --", new { @class = "form-select", id = "departmentDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">الدرجة الوظيفية</label>
+                            <span id="jobError" class="text-danger small"></span>
+                            @Html.DropDownList("JobTitleID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر الدرجة --", new { @class = "form-select", id = "jobTitleDropdown" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label fw-bold">عضو هيئة التدريس</label>
+                        <span id="facultyError" class="text-danger small"></span>
+                        @Html.DropDownList("FacultyMemberId", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-select", id = "facultyDropdown" })
+                        <div id="selectedPreview" class="text-center text-primary fw-bold mt-2" hidden></div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button type="button" class="btn btn-primary btn-lg px-4" onclick="goToForm()">
+                            <i class="bi bi-arrow-left-circle me-1"></i> استمرار
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4 border-top pt-3">
+                        <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary mx-2">
+                            <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                        </a>
+                        <a href="../FacultyMembers/Index" class="btn btn-outline-primary mx-2">
+                            <i class="bi bi-people-fill"></i> إدارة أعضاء هيئة التدريس
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="formContainer" class="mt-4" style="display:none;"></div>
+</div>
+
+
+
+@section scripts {
+    <script>
+        // عند اختيار نوع المشاركة
+        function setSelectedType(typeId) {
+            $("#HiddenTypeId").val(typeId);
+            $("#selectionSection").slideDown();
+
+            // إعادة تعيين القيم
+            $("#collegeDropdown").val("");
+            $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+            $("#jobTitleDropdown").val("");
+            $("#facultyDropdown").empty().append('<option value="">-- اختر العضو --</option>');
+            $("#formContainer").hide().empty();
+            $("#selectedPreview").text("");
+        }
+
+        // تحميل الأقسام بناءً على الكلية
+        $("#collegeDropdown").change(function () {
+            var collegeId = $(this).val();
+            if (collegeId) {
+                $.get('@Url.Action("GetDepartmentsByCollege", "Conferences")', { collegeId: collegeId }, function (data) {
+                    let deptDropdown = $("#departmentDropdown");
+                    deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                    $.each(data, function (i, item) {
+                        deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            } else {
+                $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+            }
+        });
+
+        // تحميل أعضاء هيئة التدريس بعد اختيار القسم والدرجة
+        $("#departmentDropdown, #jobTitleDropdown").change(function () {
+            let deptId = $("#departmentDropdown").val();
+            let jobTitleId = $("#jobTitleDropdown").val();
+            if (!deptId || !jobTitleId) return;
+
+            $.get('@Url.Action("GetFacultyByDeptAndTitle", "Conferences")', {
+                departmentId: deptId,
+                jobTitleId: jobTitleId
+            }, function (data) {
+                let facultyDropdown = $("#facultyDropdown");
+                facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                $.each(data, function (i, item) {
+                    facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+
+                // ✅ اختيار أول عضو تلقائيًا
+                if (data.length > 0) {
+                    facultyDropdown.val(data[0].Value);
+                    $("#selectedPreview").text("تم اختيار: " + data[0].Text);
+                } else {
+                    $("#selectedPreview").text("لا يوجد أعضاء لهذا الاختيار.");
+                }
+            });
+        });
+
+        // تحميل كل الدرجات الوظيفية عند تحميل الصفحة
+        $(document).ready(function () {
+            $.get('@Url.Action("GetAllJobTitles", "Conferences")', function (data) {
+                let jobDropdown = $("#jobTitleDropdown");
+                jobDropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+                $.each(data, function (i, item) {
+                    jobDropdown.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            });
+        });
+
+        function goToForm() {
+            const type = $("#HiddenTypeId").val();
+            const facultyId = $("#facultyDropdown").val();
+
+            if (!type || !facultyId) {
+                alert("يرجى اختيار نوع المشاركة وعضو هيئة التدريس.");
+                return;
+            }
+
+            const url = `/cdm/Conferences/Create?facultyId=${facultyId}&type=${type}`;
+
+            // ✅ التوجيه إلى صفحة Create الكاملة مباشرة
+            window.location.href = url;
+        }
+
+
+
+        // التحقق من الإدخالات قبل الاستمرار
+        $("#facultyForm").submit(function (e) {
+            const selectedType = $("#HiddenTypeId").val();
+            const selectedFaculty = $("#facultyDropdown").val();
+            let valid = true;
+
+            $("#HiddenTypeId").val(selectedType);
+            $("#HiddenMemberId").val(selectedFaculty);
+
+            if (!$("#collegeDropdown").val()) {
+                $("#collegeError").text("يرجى اختيار الكلية");
+                $("#collegeDropdown").addClass("is-invalid");
+                valid = false;
+            } else {
+                $("#collegeError").text("");
+                $("#collegeDropdown").removeClass("is-invalid");
+            }
+
+            if (!$("#departmentDropdown").val()) {
+                $("#deptError").text("يرجى اختيار القسم");
+                $("#departmentDropdown").addClass("is-invalid");
+                valid = false;
+            } else {
+                $("#deptError").text("");
+                $("#departmentDropdown").removeClass("is-invalid");
+            }
+
+            if (!$("#jobTitleDropdown").val()) {
+                $("#jobError").text("يرجى اختيار الدرجة الوظيفية");
+                $("#jobTitleDropdown").addClass("is-invalid");
+                valid = false;
+            } else {
+                $("#jobError").text("");
+                $("#jobTitleDropdown").removeClass("is-invalid");
+            }
+
+            if (!$("#facultyDropdown").val()) {
+                $("#facultyError").text("يرجى اختيار عضو هيئة التدريس");
+                $("#facultyDropdown").addClass("is-invalid");
+                valid = false;
+            } else {
+                $("#facultyError").text("");
+                $("#facultyDropdown").removeClass("is-invalid");
+            }
+
+            if (valid) {
+                goToForm();
+            }
+
+            e.preventDefault();
+        });
+    </script>
+}
+
+@*@section scripts {
+        <script>
+            function goToForm() {
+                const type = $("#HiddenTypeId").val();
+                const facultyId = $("#facultyDropdown").val();
+
+                if (!type || !facultyId) {
+                    alert("يرجى اختيار نوع المشاركة وعضو هيئة التدريس.");
+                    return;
+                }
+
+                const url = `/cdm/Conferences/Create?facultyId=${facultyId}&type=${type}`;
+                $("#formContainer").load(url, function () {
+                    $("#formContainer").fadeIn();
+
+                    if (type === "ConferenceInternal") {
+                        $("#formContainer").find("#countryContainer").hide(); // إخفاء الدولة للمؤتمر الداخلي
+                    }
+                });
+            }
+        function setSelectedType(typeId) {
+                $("#HiddenTypeId").val(typeId);
+                $("#selectionSection").slideDown();
+            }
+
+            $("#collegeDropdown").change(function () {
+                var collegeId = $(this).val();
+                if (collegeId) {
+                    $.get('@Url.Action("GetDepartmentsByCollege", "Conferences")', { collegeId: collegeId }, function (data) {
+                        let deptDropdown = $("#departmentDropdown");
+                        deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                        $.each(data, function (i, item) {
+                            deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                        });
+                    });
+                } else {
+                    $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+                }
+            });
+
+            $("#departmentDropdown, #jobTitleDropdown").change(function () {
+                let deptId = $("#departmentDropdown").val();
+                let jobTitleId = $("#jobTitleDropdown").val();
+                if (!deptId || !jobTitleId) return;
+
+                $.get('@Url.Action("GetFacultyByDeptAndTitle", "Conferences")', { departmentId: deptId, jobTitleId: jobTitleId }, function (data) {
+                    let facultyDropdown = $("#facultyDropdown");
+                    facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                    $.each(data, function (i, item) {
+                        facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            });
+
+            $(document).ready(function () {
+                $.get('@Url.Action("GetAllJobTitles", "Conferences")', function (data) {
+                    let jobDropdown = $("#jobTitleDropdown");
+                    jobDropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+                    $.each(data, function (i, item) {
+                        jobDropdown.append($('<option>', {
+                            value: item.Value,
+                            text: item.Text
+                        }));
+                    });
+                });
+            });
+
+            $("#facultyForm").submit(function (e) {
+                const selectedType = $("#HiddenTypeId").val();
+                const selectedFaculty = $("#facultyDropdown").val();
+                let valid = true;
+
+                $("#HiddenTypeId").val(selectedType);
+                $("#HiddenMemberId").val(selectedFaculty);
+
+                if (valid) {
+                    goToForm();
+                }
+
+                if (!$("#collegeDropdown").val()) {
+                    $("#collegeError").text("يرجى اختيار الكلية");
+                    $("#collegeDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#collegeError").text("");
+                    $("#collegeDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#departmentDropdown").val()) {
+                    $("#deptError").text("يرجى اختيار القسم");
+                    $("#departmentDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#deptError").text("");
+                    $("#departmentDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#jobTitleDropdown").val()) {
+                    $("#jobError").text("يرجى اختيار الدرجة الوظيفية");
+                    $("#jobTitleDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#jobError").text("");
+                    $("#jobTitleDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#facultyDropdown").val()) {
+                    $("#facultyError").text("يرجى اختيار عضو هيئة التدريس");
+                    $("#facultyDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#facultyError").text("");
+                    $("#facultyDropdown").removeClass("is-invalid");
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                }
+            });
+        </script>
+    }*@

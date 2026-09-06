@@ -1,0 +1,261 @@
+﻿@model cdm.Models.SecondmentsData
+@using cdm.Helpers
+
+@{
+    ViewBag.Title = "إضافة إعارة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .type-card {
+        border: 2px solid transparent;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+        .type-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(13, 110, 253, 0.2);
+        }
+
+        .type-card.selected {
+            border-color: #0d6efd;
+            box-shadow: 0 0 25px rgba(13, 110, 253, 0.3);
+        }
+
+    .type-icon {
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+    }
+
+    .type-title {
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    .is-invalid {
+        border: 2px solid red !important;
+    }
+</style>
+
+<div class="container mt-5">
+ 
+            <div class="text-center mb-4">
+                <h4 class="fw-bold text-primary">اختر نوع الإعارة</h4>
+                <p class="text-muted">من فضلك اختر نوع الإعارة المناسبة للعضو</p>
+            </div>
+
+            <div class="row justify-content-center g-4">
+
+                <!-- إعارة خارجية -->
+                <div class="col-md-3">
+                    <div class="card Secondments-type-card type-card text-center" data-type-id="1">
+                        <div class="card-body">
+                            <i class="bi bi-airplane-engines text-primary type-icon"></i>
+                            <div class="type-title">إعارة خارجية</div>
+                            <p class="text-muted small mt-2">للعمل أو الدراسة خارج مصر</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- إعارة داخلية -->
+                <div class="col-md-3">
+                    <div class="card Secondments-type-card type-card text-center" data-type-id="2">
+                        <div class="card-body">
+                            <i class="bi bi-bank text-success type-icon"></i>
+                            <div class="type-title">إعارة داخلية</div>
+                            <p class="text-muted small mt-2">داخل الجامعات أو المؤسسات المصرية</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- انتداب كلي -->
+                <div class="col-md-3">
+                    <div class="card Secondments-type-card type-card text-center" data-type-id="3">
+                        <div class="card-body">
+                            <i class="bi bi-diagram-3 text-warning type-icon"></i>
+                            <div class="type-title">الانتداب الكلي</div>
+                            <p class="text-muted small mt-2">للعمل بشكل دائم بمؤسسة أخرى</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <input type="hidden" id="SecondmentsType" />
+            <div id="SecondmentsTypeError" class="text-danger text-center mt-3 small"></div>
+        </div>
+   
+<div class="container mt-5">
+    <div id="selectionSection" style="display:none;">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient text-white text-center"
+                 style="background: linear-gradient(90deg, #007cf0, #00dfd8); border-radius: 0.5rem 0.5rem 0 0;">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i> اختيار عضو هيئة التدريس</h4>
+            </div>
+
+            <div class="card-body bg-light p-4">
+                <h5 class="text-center mb-4">يرجى اختيار الكلية، القسم، الدرجة الوظيفية، ثم عضو هيئة التدريس لإضافة بيانات الاعارة</h5>
+
+                @using (Html.BeginForm("InsertSecondment", "Secondments", FormMethod.Post, new { id = "facultyForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.SecondmentsTypeId, new { id = "HiddenTypeId" })
+                    @Html.HiddenFor(model => model.SecondmentsMemberId, new { id = "HiddenMemberId" })
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">الكلية</label>
+                            <span id="collegeError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "collegeDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">القسم</label>
+                            <span id="deptError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("DepartmentID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر القسم --", new { @class = "form-control", id = "departmentDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">الدرجة الوظيفية</label>
+                            <span id="jobError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("JobTitleID", new SelectList(new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "أستاذ", Value = "2" },
+                                new SelectListItem { Text = "أستاذ متفرغ", Value = "3" },
+                                new SelectListItem { Text = "أستاذ مساعد", Value = "4" },
+                                new SelectListItem { Text = "مدرس", Value = "5" }
+                            }, "Value", "Text"), "-- اختر الدرجة الوظيفية --", new { @class = "form-control", id = "jobTitleDropdown" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">عضو هيئة التدريس</label>
+                        <span id="facultyError" class="text-danger small d-block"></span>
+                        @Html.DropDownListFor(model => model.SecondmentsMemberId, new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-control", id = "facultyDropdown" })
+                    </div>
+
+                    <div class="form-group mt-4 text-center">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg mx-2">
+                                <i class="bi bi-arrow-left-circle"></i> استمرار
+                            </button>
+                        </div>
+                        <!-- أزرار الأعضاء -->
+                        <div class="pt-3 border-top d-inline-block">
+                            <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary btn-lg mx-2">
+                                <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                            </a>
+                            <a href="../FacultyMembers/Index" class="btn btn-lg btn-outline-primary mx-2 d-inline-flex align-items-center">
+                                <i class="bi bi-people-fill me-2"></i> إدارة أعضاء هيئة التدريس
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // عند اختيار نوع الإعارة
+            $(".Secondments-type-card").click(function () {
+                $(".Secondments-type-card").removeClass("selected");
+                $(this).addClass("selected");
+
+                var selectedTypeId = $(this).data("type-id");
+                $("#SecondmentsType").val(selectedTypeId);
+                $("#HiddenTypeId").val(selectedTypeId); // للتأكيد
+
+                $("#SecondmentsTypeError").text("");
+                $("#selectionSection").slideDown(); // ✅ إظهار الجزء التالي
+            });
+
+            // تعبئة الأقسام عند اختيار الكلية
+            $("#collegeDropdown").change(function () {
+                var collegeId = $(this).val();
+                if (collegeId) {
+                    $.get('@Url.Action("GetDepartmentsByCollege", "Secondments")', { collegeId: collegeId }, function (data) {
+                        let deptDropdown = $("#departmentDropdown");
+                        deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                        $.each(data, function (i, item) {
+                            deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                        });
+                    });
+                } else {
+                    $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+                }
+            });
+
+            // عند اختيار القسم والدرجة الوظيفية، تحميل الأعضاء
+            $("#departmentDropdown, #jobTitleDropdown").change(function () {
+                let deptId = $("#departmentDropdown").val();
+                let jobTitleId = $("#jobTitleDropdown").val();
+                if (!deptId || !jobTitleId) return;
+
+                $.get('@Url.Action("GetFacultyByDeptAndTitle", "Secondments")', { departmentId: deptId, jobTitleId: jobTitleId }, function (data) {
+                    let facultyDropdown = $("#facultyDropdown");
+                    facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                    $.each(data, function (i, item) {
+                        facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            });
+
+            // التحقق قبل الإرسال
+            $("#facultyForm").submit(function (e) {
+                $("#HiddenTypeId").val($("#SecondmentsType").val());
+                $("#HiddenMemberId").val($("#facultyDropdown").val());
+
+                let valid = true;
+
+                if (!$("#SecondmentsType").val()) {
+                    $("#SecondmentsTypeError").text("يرجى اختيار نوع الإعارة");
+                    valid = false;
+                }
+
+                if (!$("#collegeDropdown").val()) {
+                    $("#collegeError").text("يرجى اختيار الكلية");
+                    $("#collegeDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#collegeError").text("");
+                    $("#collegeDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#departmentDropdown").val()) {
+                    $("#deptError").text("يرجى اختيار القسم");
+                    $("#departmentDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#deptError").text("");
+                    $("#departmentDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#jobTitleDropdown").val()) {
+                    $("#jobError").text("يرجى اختيار الدرجة الوظيفية");
+                    $("#jobTitleDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#jobError").text("");
+                    $("#jobTitleDropdown").removeClass("is-invalid");
+                }
+
+                if (!$("#facultyDropdown").val()) {
+                    $("#facultyError").text("يرجى اختيار عضو هيئة التدريس");
+                    $("#facultyDropdown").addClass("is-invalid");
+                    valid = false;
+                } else {
+                    $("#facultyError").text("");
+                    $("#facultyDropdown").removeClass("is-invalid");
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,96 @@
+﻿@model List<cdm.Models.StatisticalRowVM>
+@{
+    var fromDate = Request["fromDate"];
+    var toDate = Request["toDate"];
+}
+
+<div id="printArea">
+
+    <div class="text-center mb-4">
+        <h5 class="fw-bold text-danger">
+            بيان إحصائى عن (البعثات - الإجازات الدراسية - المهمات العلمية - الإعارات - المؤتمرات)
+            للعام الجامعى @fromDate وحتى @toDate
+        </h5>
+    </div>
+
+    <table class="table table-bordered text-center align-middle shadow-sm">
+        <thead>
+            <tr class="table-secondary fw-bold">
+                <th rowspan="2" style="vertical-align: middle;">الكليات</th>
+                <th colspan="5" class="table-info">عدد المشاركين</th>
+                <th rowspan="2" class="table-danger" style="vertical-align: middle;">الإجمالي</th>
+                <th rowspan="2" style="vertical-align: middle;">التوقيع</th>
+            </tr>
+            <tr class="table-info">
+                <th>البعثات</th>
+                <th>الإجازات الدراسية</th>
+                <th>المهمات العلمية</th>
+                <th>المؤتمرات</th>
+                <th>الإعارات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CollegeName</td>
+                    <td>@item.MissionsCount</td>
+                    <td>@item.StudyLeavesCount</td>
+                    <td>@item.ScientificMissionsCount</td>
+                    <td>@item.ConferencesCount</td>
+                    <td>@item.SecondmentsCount</td>
+                    <td class="fw-bold text-danger">@item.Total</td>
+                    <td></td> <!-- خانة التوقيع -->
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- التوقيع والطباعة -->
+   
+        <div class="mt-1 p1-4 d-print-block">
+            <div class="mt-5 px-4 d-print-block" style="text-align:left">
+                <p><strong class="px-5">توقيع المدير </strong> <br />_______________________</p>
+            </div>
+
+        </div>
+
+        <div class="text-end mt-4">
+            <p><strong>تاريخ الطباعة:</strong> @DateTime.Now.ToString("yyyy-MM-dd")</p>
+        </div>
+    </div>
+</div>
+
+<div class="text-end mt-4 d-print-none">
+    <button class="btn btn-outline-primary" onclick="printReport()">
+        🖨️ طباعة التقرير
+    </button>
+</div>
+
+<script>
+    function printReport() {
+        const content = document.getElementById("printArea").innerHTML;
+        const printWindow = window.open('', '', 'width=1000,height=800');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>تقرير الإجازات والبعثات</title>
+                    <style>
+                        body { direction: rtl; font-family: "Segoe UI", Tahoma, sans-serif; padding: 20px; }
+                        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+                        thead { background-color: #d1e7dd; color: #0f5132; }
+                        h5 { text-decoration: underline; margin-bottom: 20px; }
+                        .text-end { text-align: right; }
+                        .text-center { text-align: center; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${content}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+</script>
+
+    

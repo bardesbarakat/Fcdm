@@ -1,0 +1,134 @@
+﻿@model IEnumerable<cdm.Models.SecondmentWithRenewalVM>
+
+@{
+    ViewBag.Title = "قائمة الإعارات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <!-- عنوان رئيسي + شريط الأدوات -->
+    <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap pb-2">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-list-task"></i> قائمة الإعارات
+            </h4>
+            <a href="@Url.Action("InsertData", "Secondments")" class="btn btn-success mb-3">
+                <i class="bi bi-plus-circle-fill"></i> إضافة إعارة جديدة
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Index", "Secondments", FormMethod.Get, new { @class = "row g-2 pt-1" }))
+        {
+            <div class="col-md-5">
+                @Html.TextBox("FacultyName", Request["FacultyName"], new { @class = "form-control", placeholder = "ابحث باسم العضو..." })
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Secondments")" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> مسح الفلاتر
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success text-center shadow-sm">
+            <strong>@ViewBag.Message</strong>
+        </div>
+    }
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered text-center align-middle bg-white shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>الدولة</th>
+                <th>نوع الإعارة</th>
+                <th>تاريخ البداية</th>
+                <th>تاريخ النهاية</th>
+                <th>التجديد</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                int counter = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@item.Secondment.FacultyMember.FullName</td>
+                        <td>@item.Secondment.SecondmentsCountry</td>
+                        <td>@(item.Secondment.SecondmentsType?.SecondmentsName ?? "غير محدد")</td>
+
+                        <td>@(item.Secondment.SecondmentsStartDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td>@(item.Secondment.SecondmentsEndDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td class="fw-bold @(item.HasRenewal ? "text-success" : "text-danger")">
+                            @(item.HasRenewal ? "✔ تم التجديد" : "✖ لم يتم التجديد")
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                <a href="@Url.Action("Renew", "Secondments", new { id = item.Secondment.ID })" class="btn btn-sm btn-info">تجديد</a>
+                                <a href="@Url.Action("Details", "Secondments", new { id = item.Secondment.ID })" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> عرض
+                                </a>
+                                <a href="@Url.Action("Edit", "Secondments", new { id = item.Secondment.ID })" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil-square"></i> تعديل
+                                </a>
+                                <a href="@Url.Action("Delete", "Secondments", new { id = item.Secondment.ID })" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i> حذف
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    counter++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-danger">لا توجد إعارات مسجلة</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#collegeDropdown").change(function () {
+                var collegeId = $(this).val();
+                if (collegeId) {
+                    $.getJSON("/FacultyMembers/GetDepartmentsByCollege", { collegeId: collegeId })
+                        .done(function (data) {
+                            var deptOptions = '<option value="">اختر القسم</option>';
+                            $.each(data, function (i, item) {
+                                deptOptions += '<option value="' + item.Value + '">' + item.Text + '</option>';
+                            });
+                            $("#departmentDropdown").html(deptOptions);
+                        })
+                        .fail(function () {
+                            alert("حدث خطأ أثناء تحميل الأقسام.");
+                        });
+                } else {
+                    $("#departmentDropdown").html('<option value="">اختر القسم</option>');
+                }
+            });
+        });
+    </script>
+
+
+}

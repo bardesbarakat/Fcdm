@@ -1,0 +1,37 @@
+﻿@model cdm.Models.ScientificMission
+
+@{
+    ViewBag.Title = "تأكيد الحذف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card border-danger shadow">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">⚠️ تأكيد حذف المهمة العلمية</h4>
+        </div>
+        <div class="card-body">
+            <p>هل أنت متأكد أنك تريد حذف المهمة العلمية التالية؟</p>
+
+            <dl class="row">
+                <dt class="col-sm-3">عضو هيئة التدريس:</dt>
+                <dd class="col-sm-9">@Model.FacultyMember.FullName</dd>
+
+                <dt class="col-sm-3">نوع المهمة:</dt>
+                <dd class="col-sm-9">@Model.MissionType</dd>
+
+                <dt class="col-sm-3"> الغرض من المهمة:</dt>
+                <dd class="col-sm-9">@Model.MissionPurpose</dd>
+            </dl>
+
+            @using (Html.BeginForm("DeleteConfirmed", "ScientificMissions", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.MissionID)
+
+                <button type="submit" class="btn btn-danger">🗑️ حذف</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">🔙 إلغاء</a>
+            }
+        </div>
+    </div>
+</div>

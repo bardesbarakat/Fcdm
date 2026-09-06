@@ -1,0 +1,28 @@
+@model Member
+@{
+    ViewBag.Title = "Add Member";
+}
+<h2 class="my-4">Add Member</h2>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+{
+    <div class="mb-3">
+        @Html.LabelFor(m => m.FullName)
+        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Enter full name" })
+        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter email" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Department)
+        @Html.TextBoxFor(m => m.Department, new { @class = "form-control", placeholder = "Department" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.JoinDate)
+        @Html.TextBoxFor(m => m.JoinDate, new { @class = "form-control", type = "date" })
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+}

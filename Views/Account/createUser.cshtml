@@ -1,0 +1,51 @@
+﻿@model cdm.Models.User
+
+@{
+    ViewBag.Title = "إضافة مستخدم جديد";
+    Layout = null; // ✅ مهم لأن المودال لا يحتاج Layout كامل
+}
+
+<div class="container mt-3">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white text-center">
+            <h5 class="mb-0">@ViewBag.Title</h5>
+        </div>
+
+        <div class="card-body">
+            @using (Html.BeginForm("CreateUser", "Account", FormMethod.Post, new { id = "createUserForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.FullName, "الاسم الكامل")
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "أدخل الاسم الكامل" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Username, "اسم المستخدم")
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "أدخل اسم المستخدم" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Email, "البريد الإلكتروني")
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "example@email.com" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.PasswordHash, "كلمة المرور")
+                    @Html.PasswordFor(m => m.PasswordHash, new { @class = "form-control", placeholder = "••••••••" })
+                </div>
+
+                <div class="form-group mb-4">
+                    @Html.LabelFor(m => m.RoleID, "الدور")
+                    @Html.DropDownListFor(m => m.RoleID, ViewBag.Roles as SelectList, "-- اختر الدور --", new { @class = "form-control" })
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success px-4">حفظ</button>
+                    <button type="button" class="btn btn-secondary ml-2" data-bs-dismiss="modal">إلغاء</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

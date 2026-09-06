@@ -1,0 +1,71 @@
+﻿
+
+@model cdm.Models.Participation
+@{
+    ViewBag.Title = " إدخال ورش العمل";
+    var facultyName = ViewBag.FacultyName as string;
+    var participationType = ViewBag.Type as string;
+}
+
+<div class="card shadow-lg border-0 mt-4">
+    <div class="card-header bg-primary text-white text-center">
+        <h4 class="mb-0">إدخال ورش العمل</h4>
+    </div>
+
+    <div class="card-body bg-light">
+        @using (Html.BeginForm("SaveParticipation", "Conferences", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input type="hidden" name="FacultyMemberId" value="@ViewBag.FacultyId" />
+
+            <input type="hidden" name="Type" value="@ViewBag.Type" />
+
+            if (ViewBag.FacultyName != null && ViewBag.TypeText != null)
+            {
+                <div class="alert alert-info text-center">
+                    <strong>العضو المختار :</strong> @ViewBag.FacultyName &nbsp; | &nbsp;
+                    <strong>نوع المشاركة :</strong> @ViewBag.TypeText
+                </div>
+            }
+
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>عنوان ورشة العمل</label>
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="col-md-6">
+                    <label>مكان انعقاد ورشة العمل</label>
+                    @Html.TextBoxFor(m => m.Location, new { @class = "form-control", required = "required" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label> فترة انعقاد ورشة العمل</label>
+                    @Html.TextBoxFor(m => m.Period, new { @class = "form-control", required = "required" })
+                </div>
+                @*<div class="col-md-6" id="countryContainer">
+                        <label>البلد</label>
+
+                        @Html.DropDownListFor(m => m.ConferenceCountry, (SelectList)ViewBag.Countries, "-- اختر الدولة --", new { @class = "form-control", id = "Country" })
+                    </div>*@
+            </div>
+
+
+
+
+            <div class="mb-3">
+                <label>ملاحظات</label>
+                @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> حفظ البيانات
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+

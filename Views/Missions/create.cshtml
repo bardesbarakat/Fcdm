@@ -1,0 +1,267 @@
+﻿@model cdm.Models.Mission
+@{
+    ViewBag.Title = "إضافة بعثة جديدة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+    @Html.HiddenFor(m => m.MainMissionType, new { id = "HiddenMissionType" })
+
+
+
+    var participationType = ViewBag.Type as string;
+}
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>⚠️ يوجد أخطاء في البيانات المدخلة:</strong>
+        <ul>
+            @foreach (var key in ViewData.ModelState.Keys)
+            {
+                var state = ViewData.ModelState[key];
+                foreach (var error in state.Errors)
+                {
+                    <li>@(key): @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-secondary text-white text-center rounded-top" style="background: linear-gradient(to right, #1e3c72, #2a5298);">
+            <h4 class="mb-0 text-white text-center  d-flex justify-content-between align-items-center">
+                <span class=" text-white text-center rounded-top">
+                    <i class="bi bi-plus-circle me-2"></i> إضافة بيانات البعثة:
+                    @Model.MainMissionType
+                </span>
+
+            </h4>
+
+        </div>
+
+        <div class="p-4 rounded shadow-sm mb-4" style="background-color: #f8f9fa; border-left: 5px solid #0d6efd;">
+
+            @if (faculty != null)
+            {
+                <div class="alert alert-info">
+                    <div class="row g-3">
+                        <div class="col-md-4"><strong>الاسم:</strong> @faculty.FullName</div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                        <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                        <div class="col-md-4"><strong>رقم التواصل:</strong> @faculty.PhoneNumber</div>
+                        <div class="col-md-4"><strong>النوع:</strong> @faculty.Gender</div>
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                        <div class="col-md-4"><strong>رقم التأمين:</strong> @faculty.InsuranceNumber</div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    لا توجد بيانات لعضو هيئة التدريس.
+                </div>
+            }
+
+            @using (Html.BeginForm("Create", "Missions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.FacultyMemberID)
+                @Html.HiddenFor(m => m.MainMissionType) <!-- ✅ أضف السطر دا هنا -->
+        <div class="row g-3">
+            @Html.Hidden("FacultyName", faculty?.FullName ?? "غير معروف")
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.LastQualification, "الدرجة العلمية الحالية")
+                @Html.TextBoxFor(m => m.LastQualification, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.MilitaryStatus, "الموقف من التجنيد")
+                @Html.DropDownListFor(m => m.MilitaryStatus, (IEnumerable<SelectListItem>)ViewBag.MilitaryStatusList, "-- اختر الموقف من التجنيد --", new { @class = "form-control", required = "required" })
+
+            </div>
+
+            <div class="col-md-4" id="countryContainer">
+                @Html.LabelFor(m => m.Country, "الدولة الموفد إليها")
+                @Html.DropDownListFor(m => m.Country, (IEnumerable<SelectListItem>)ViewBag.Country, "-- اختر الدولة --", new { @class = "form-control", required = "required" })
+
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.LastQualification, "اخر مؤهل")
+                @Html.TextBoxFor(m => m.LastQualification, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.UniversityName, "اسم الجامعة")
+                @Html.TextBoxFor(m => m.UniversityName, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.DiscussionDate, "تاريخ المناقشة")
+                @Html.TextBoxFor(m => m.DiscussionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+            <div class="col-md-4" id="channelApprovalDateContainer">
+                @Html.LabelFor(m => m.UniPresidentChannelApprovalDate, "تاريخ موافقة رئيس الجامعة على إقامة قناة علمية")
+                @Html.TextBoxFor(m => m.UniPresidentChannelApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.MissionType, "نوع البعثة")
+                @Html.TextBoxFor(m => m.MissionType, new { @class = "form-control", required = "required" })
+            </div>   <div class="col-md-4">
+                @Html.LabelFor(m => m.MissionPurpose, "الغرض من البعثة")
+                @Html.TextBoxFor(m => m.MissionPurpose, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.MissionCurrentYear, "العام الحالي للبعثة")
+                @Html.TextBoxFor(m => m.MissionCurrentYear, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.DepartureClearanceDate, "تاريخ إخلاء الطرف")
+                @Html.TextBoxFor(m => m.DepartureClearanceDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+            </div>
+            <div class="col-md-4" id="TravelDatediv">
+                @Html.LabelFor(m => m.TravelDate, "تاريخ السفر")
+                @Html.TextBoxFor(m => m.TravelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.MissionDuration, "مدة البعثة")
+                @Html.TextBoxFor(m => m.MissionDuration, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.LabelFor(m => m.MissionValue, "قيمة البعثة")
+                @Html.TextBoxFor(m => m.MissionValue, new { @class = "form-control", required = "required" })
+            </div>
+
+            <div class="col-md-4">
+                @Html.Label("نوع الإجازة (بمرتب / بدون مرتب)")
+                @Html.TextBoxFor(m => m.VacationType, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4" id="SecurityApprovalNodiv">
+                @Html.Label("رقم الموافقة الأمنية")
+                @Html.TextBoxFor(m => m.SecurityApprovalNo, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4" id="SecurityApprovalDatediv">
+                @Html.Label("تاريخ الموافقة الأمنية")
+                @Html.TextBoxFor(m => m.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+
+
+            <div class="col-md-4" id="StudyDurationInsidediv">
+                @Html.Label("مدة الدراسة داخل البلاد")
+                @Html.TextBoxFor(m => m.StudyDurationInside, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4" id="SStudyDurationOutsidediv">
+                @Html.Label("مدة الدراسة خارج البلاد")
+                @Html.TextBoxFor(m => m.StudyDurationOutside, new { @class = "form-control" })
+            </div>
+
+
+            <div class="col-md-4">
+                @Html.Label("تاريخ موافقة مجلس الكلية")
+                @Html.TextBoxFor(m => m.FacultyCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("تاريخ موافقة اللجنة التنفيذية")
+                @Html.TextBoxFor(m => m.ExecCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("تاريخ موافقة رئيس الجامعة")
+                @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("رقم القرار التنفيذي")
+                @Html.TextBoxFor(m => m.ExecDecisionNo, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("تاريخ القرار التنفيذي")
+                @Html.TextBoxFor(m => m.ExecDecisionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+            </div>
+
+            <div id="channelContainer" class="col-md-4">
+                @Html.Label("ملف قناة رئيس الجامعة")
+                <input type="file" name="UniPresidentChannelFileUpload" class="form-control" accept="application/pdf" />
+            </div>
+
+            <div class="col-md-4">
+                @Html.Label("ملف قرار رئيس الجامعة")
+                <input type="file" name="UniPresidentDecisionFileUpload" class="form-control" , required="required" accept="application/pdf" />
+            </div>
+
+            <div class="col-md-4">
+                @Html.Label("ملف مذكرة الاعتماد")
+                <input type="file" name="AccreditationMemoFileUpload" class="form-control" , required="required" accept="application/pdf" />
+            </div>
+
+
+
+            <div class="col-md-4">
+                @Html.Label("اسم الضامن وصلة القرابة")
+                @Html.TextBoxFor(m => m.GuarantorName, new { @class = "form-control", placeholder = "اسم الضامن وصلة القرابة", required = "required" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("تاريخ استمارة مبعوث عائد")
+                @Html.TextBoxFor(m => m.ReturneeFormDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("تاريخ استلام العمل")
+                @Html.TextBoxFor(m => m.WorkResumptionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+        </div>
+
+
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-save"></i> حفظ البعثة
+                    </button>
+                    <a href="@Url.Action("Index", "Missions")" class="btn btn-outline-secondary btn-lg ms-3">
+                        <i class="bi bi-x-circle"></i> إلغاء
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            const type = $("#HiddenMissionType").val();
+
+            if (type === "بعثات داخلية") {
+                // أخفي الدولة بدون مسح القيمة
+                $("#countryContainer").hide();
+
+                // اضبط الدولة "مصر" فقط إذا كانت فارغة
+                if (!$("#Country").val()) {
+                    $("#Country").val("مصر");
+                }
+
+                $("#StudyDurationInsidediv").hide();
+                $("#SStudyDurationOutsidediv").hide();
+
+
+                $("#SecurityApprovalNodiv").hide();
+                $("#SecurityApprovalDatediv").hide();
+                $("#TravelDatediv").hide();
+
+                // أخفي حقل قناة علمية فقط (لا تمسح)
+                $("#channelApprovalDateContainer").hide();
+                $("#channelContainer").hide();
+            }
+            else if (type === "بعثات خارجية") {
+                $("#channelApprovalDateContainer").hide();
+                $("#channelContainer").hide();
+                $("#StudyDurationInsidediv").hide();
+                $("#SStudyDurationOutsidediv").hide();
+            }
+
+         
+        });
+    </script>
+
+
+}

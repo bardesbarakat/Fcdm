@@ -1,0 +1,66 @@
+@model cdm.Models.User
+
+@{
+    ViewBag.Title = "Edit Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.UserID)
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="mb-4"> ⁄œÌ· «·„·› «·‘Œ’Ì</h2>
+                @using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.HiddenFor(m => m.UserID)
+
+                    <div class="form-group mb-3">
+                        <label for="Username">«”„ «·„” Œœ„</label>
+                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", required = "required" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Username">ﬂ·„… «·„—Ê—</label>
+                        @Html.TextBoxFor(m => m.PasswordHash, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="Email">«·»—Ìœ «·«·ﬂ —Ê‰Ì</label>
+
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", required = "required" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="FullName">«·«”„ »«·ﬂ«„·</label>
+
+
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="PhoneNumber"> ·›Ê‰</label>
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>«·’Ê—… «·‘Œ’Ì…</label><br />
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="Profile" style="width:100px;height:100px;border-radius:50%;object-fit:cover;" class="mb-2" />
+                        }
+                        <input type="file" name="ImageFile" class="form-control" />
+                    </div>
+
+                    <div class="form-group form-check mb-3">
+                        <input type="checkbox" name="IsActive" value="true" @(Model.IsActive == true ? "checked" : "") />
+                        <label class="form-check-label">Active</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary w-100">Õ›Ÿ «· ⁄œÌ·« </button>
+                }
+            </div>
+        </div>
+    </div>
+}

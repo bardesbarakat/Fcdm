@@ -1,0 +1,114 @@
+﻿@model cdm.Models.VisitingProfessorDetailsVM
+@{
+    ViewBag.Title = "تعديل بيانات الأستاذ الزائر";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+ 
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">تعديل بيانات الأستاذ الزائر</h4>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Edit", "VisitingProfessors", FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+
+
+                {
+
+
+
+                    @Html.AntiForgeryToken()
+
+                    @Html.HiddenFor(m => m.VisitingProfessor.Id)
+                    @Html.HiddenFor(m => m.FacultyMember.FacultyMemberID)
+                    @Html.HiddenFor(m => m.VisitingProfessor.VisitType)
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.VisitingProfessor.Country)
+                            @Html.DropDownListFor(
+    m => m.VisitingProfessor.Country,
+    ViewBag.Countries as IEnumerable<SelectListItem>,
+    "-- اختر الدولة --",
+    new { @class = "form-control", required = "required" }
+)
+
+
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.VisitingProfessor.VisitStartDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.VisitStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.VisitingProfessor.VisitEndDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.VisitEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="col-md-12">
+                            @Html.LabelFor(m => m.VisitingProfessor.VisitPurpose)
+                            @Html.TextAreaFor(m => m.VisitingProfessor.VisitPurpose, new { @class = "form-control", rows = 3, required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.SecurityApprovalNoAndDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.SecurityApprovalNoAndDate, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.CollegeCouncilApprovalDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.CollegeCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.UniversityPresidentApprovalDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.ExecutiveDecisionNoAndDate)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.ExecutiveDecisionNoAndDate, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.VisitorUniversityName)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.VisitorUniversityName, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.VisitingProfessor.HostCollege)
+                            @Html.TextBoxFor(m => m.VisitingProfessor.HostCollege, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.Label("ملف مذكرة الاعتماد")
+                            <input type="file" name="AccreditationMemoFileUpload" class="form-control" accept=".pdf" />
+                            @if (!string.IsNullOrEmpty(Model.VisitingProfessor.AccreditationMemoFile))
+                            {
+                                <a href="@Url.Content("~" + Model.VisitingProfessor.AccreditationMemoFile)" target="_blank" class="btn btn-sm btn-outline-primary mt-1">📄 عرض الملف الحالي</a>
+                            }
+                        </div>
+
+                        <div class="col-md-6">
+                            @Html.Label("ملف موافقة رئيس الجامعة")
+                            <input type="file" name="PresidentApprovalFileUpload" class="form-control" accept=".pdf" />
+                            @if (!string.IsNullOrEmpty(Model.VisitingProfessor.PresidentApprovalFile))
+                            {
+                                <a href="@Url.Content("~" + Model.VisitingProfessor.PresidentApprovalFile)" target="_blank" class="btn btn-sm btn-outline-primary mt-1">📄 عرض الملف الحالي</a>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success">💾 حفظ التعديلات</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary ms-2">رجوع</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>

@@ -1,0 +1,196 @@
+﻿@model cdm.Models.Conference
+@{
+    ViewBag.Title = "إدخال بيانات المؤتمر";
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+    var participationType = ViewBag.Type as string;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string typeName = ViewBag.Type as string;
+    string typeText = "";
+
+    switch (typeName)
+    {
+        case "ConferenceInternal":
+            typeText = "مؤتمر داخلي";
+            break;
+        case "ConferenceExternal":
+            typeText = "مؤتمر خارجي";
+            break;
+        case "Workshop":
+            typeText = "ورشة عمل";
+            break;
+        case "Training":
+            typeText = "دورة تدريبية";
+            break;
+        case "Meeting":
+            typeText = "اجتماع";
+            break;
+        default:
+            typeText = "مشاركة";
+            break;
+    }
+}
+
+
+<div class="card shadow-lg border-0 m-5">
+    <div class="card-header text-white text-center" style="background: linear-gradient(135deg, rgb(227, 161, 39), rgb(180, 100, 20)); ">
+        <h4 class="mb-0 text-white">إدخال بيانات : @typeText</h4>
+    </div>
+
+    <div class="card-body bg-light">
+        @if (faculty != null)
+        {
+            <div class="alert alert-info">
+                <div class="row g-3">
+                    <div class="col-md-4"><strong>الاسم:</strong> @faculty.FullName</div>
+                    <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                    <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                    <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                    <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                    <div class="col-md-4"><strong>رقم التواصل:</strong> @faculty.PhoneNumber</div>
+                    <div class="col-md-4"><strong>النوع:</strong> @faculty.Gender</div>
+                    <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                    <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                    <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                    <div class="col-md-4"><strong>رقم التأمين:</strong> @faculty.InsuranceNumber</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                لا توجد بيانات لعضو هيئة التدريس.
+            </div>
+        }
+
+
+
+        @using (Html.BeginForm("InsertData", "Conferences", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input type="hidden" name="FacultyMemberId" value="@ViewBag.FacultyId" />
+
+            <input type="hidden" name="Type" value="@ViewBag.Type" />
+
+            if (ViewBag.FacultyName != null && ViewBag.TypeText != null)
+            {
+                <div class="alert alert-info text-center">
+                    <strong>العضو المختار :</strong> @ViewBag.FacultyName &nbsp; | &nbsp;
+                    <strong>نوع المشاركة :</strong> @ViewBag.TypeText
+                </div>
+            }
+
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label>العنوان</label>
+                    @Html.TextBoxFor(m => m.ConferenceTitle, new { @class = "form-control", required = "required" })
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3" id="countryContainer">
+                    <label>البلد</label>
+
+                    @Html.DropDownListFor(m => m.ConferenceCountry, (SelectList)ViewBag.Countries, "-- اختر الدولة --", new { @class = "form-control", id = "Country" })
+                </div>
+                <div class="col-md-3">
+                    <label>مكان الانعقاد</label>
+                    @Html.TextBoxFor(m => m.ConferenceLocation, new { @class = "form-control" })
+                </div>
+
+                <div class="col-md-3">
+                    <label>فترة الانعقاد</label>
+                    @Html.TextBoxFor(m => m.ConferencePeriod, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="col-md-3">
+                    <label>نوع المشاركة</label>
+                    @Html.TextBoxFor(m => m.ParticipationType, new { @class = "form-control", required = "required" })
+                </div>
+            </div>
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <label>المساهمة</label>
+                    @Html.TextBoxFor(m => m.Contribution, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="col-md-3">
+                    <label>(تاريخ مذكرة الاعتماد) تاريخ موافقة رئيس الجامعة</label>
+                    @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", required = "required" , type = "date" })
+                </div>
+                <div class="col-md-3" >
+                    <label>تاريخ ورقم قرار رئيس الجامعه</label>
+                    @Html.TextBoxFor(m => m.UniversityPresidentDecision, new { @class = "form-control", required = "required"})
+                </div>
+
+
+                <div class="col-md-3" id="securityNumberContainer">
+                    <label>رقم الموافقة الامنية</label>
+                    @Html.TextBoxFor(m => m.SecurityApprovalNumber, new { @class = "form-control" })
+                </div>
+                <div class="col-md-3" id="securityDateContainer">
+                    <label>تاريخ الموافقة الامنية</label>
+                    @Html.TextBoxFor(m => m.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </div>
+                <div class="mb-3">
+                    <label>ملاحظات</label>
+                    @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+                </div>
+
+            </div>
+            <div class="mb-3">
+                <input type="hidden" name="ConferenceType" value="@typeText" />
+
+            </div>
+
+
+
+            <div class="row mb-3">
+                <div class="col-md-4" id="UniversityDecisionFile">
+                    <label>ملف قرار رئيس الجامعة</label>
+                    <input type="file" name="UniversityDecisionFile" class="form-control" accept=".pdf"  />
+                </div>
+                <div class="col-md-4">
+                    <label>مذكرة الاعتماد</label>
+                    <input type="file" name="ApprovalMemoFile" class="form-control" accept=".pdf" required />
+                </div>
+                <div class="col-md-4">
+                    <label>ملفات أخرى</label>
+                    <input type="file" name="OtherFiles" class="form-control" accept=".pdf" multiple />
+                </div>
+            </div>
+
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> حفظ البيانات
+                </button>
+            </div>
+        }
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var type = '@ViewBag.Type';
+
+            // ✅ إخفاء واختيار مصر إذا لم يكن مؤتمر خارجي
+            if (type !== 'ConferenceExternal') {
+                $("#countryContainer").hide();
+                $("#Country").val("مصر");
+            }
+            // ✅ إخفاء الموافقة الأمنية وملف قرار رئيس الجامعه إذا كان مؤتمر داخلي فقط
+            if (type === 'ConferenceInternal') {
+                $("#securityNumberContainer").hide();
+                $("#securityDateContainer").hide();
+                $("#UniversityDecisionFile").hide();
+                
+            }
+        });
+    </script>
+}
+
+
+
+
+

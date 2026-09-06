@@ -1,0 +1,95 @@
+﻿
+@model List<cdm.Models.CurrentlyAbroadFacultyVM>
+@{
+    var college = ViewBag.College;
+    int counter = 1;
+}
+
+<div id="printArea">
+    <div class="text-center mb-4">
+        <h5 class="fw-bold text-decoration-underline">
+            بيـــــــــــــان ببيانات السادة أعضاء هيئة التدريس<br />
+            <span class="fw-normal">"إعارات - إجازات دراسية – مهمات علمية"</span>
+        </h5>
+        <p>بالخارج حالياً</p>
+        <p>كليــــــــــــــــــــــة: <strong>@college</strong></p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">لا توجد بيانات</div>
+    }
+    else
+    {
+        <table class="table table-bordered text-center" dir="rtl">
+            <thead class="table-success">
+                <tr>
+                    <th>م</th>
+                    <th>الاســـــــــــــــــــم</th>
+                    <th>الوظيفة</th>
+                    <th>القسم</th>
+                    <th>البلد</th>
+                    <th>نوع الاجازة</th>
+                    <th>الرقم القومي</th>
+                    <th>رقم التليفون</th>
+                    <th>البريد الإلكتروني</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@item.FullName</td>
+                        <td>@item.JobTitle</td>
+                        <td>@item.DepartmentName</td>
+                        <td>@item.Country</td>
+                        <td>@item.WorkType</td>
+                        <td>@item.NationalID</td>
+                        <td>@item.PhoneNumber</td>
+                        <td>@item.Email</td>
+                    </tr>
+                    counter++;
+                }
+            </tbody>
+        </table>
+
+        <div class="mt-5 pt-4 d-print-block">
+            <div class="mt-5 px-4 d-print-block" style="text-align:left">
+                <p><strong class="px-5">توقيع المدير </strong> <br />_______________________</p>
+            </div>
+          
+        </div>
+    }
+    </div>
+<div class="text-end mt-4 d-print-none">
+    <button class="btn btn-outline-primary" onclick="printReport()">
+        🖨️ طباعة التقرير
+    </button>
+</div>
+
+<script>
+    function printReport() {
+        const content = document.getElementById("printArea")?.innerHTML || document.body.innerHTML;
+        const printWindow = window.open('', '', 'width=1000,height=800');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>من بالخارج حالياً</title>
+                    <style>
+                        body { direction: rtl; font-family: "Segoe UI", Tahoma, sans-serif; padding: 20px; }
+                        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+                        thead { background-color: #d1e7dd; color: #0f5132; }
+                        h5 { text-decoration: underline; margin-bottom: 20px; }
+                        .text-end { text-align: right; }
+                        .text-center { text-align: center; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${content}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+</script>

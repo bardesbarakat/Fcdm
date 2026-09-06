@@ -1,0 +1,80 @@
+﻿@model X.PagedList.IPagedList<cdm.Models.FacultyMember>
+@using X.PagedList.Mvc;
+
+
+@{
+    ViewBag.Title = "أعضاء هيئة التدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <h2>أعضاء هيئة التدريس</h2>
+
+
+    <div class="container-fluid full-height-container">
+        <div class="row flex-grow-1 pt-2">
+
+            @Html.Partial("_LayoutSidebar")
+            <!-- محتوى القسم المختار -->
+            <div class="col-md-9" id="dashboardContent">
+
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>الاسم الكامل</th>
+                                <th>الكلية</th>
+                                <th>القسم</th>
+                                <th>المسمى الوظيفي</th>
+                                <th>أدخل بواسطة</th>
+                                <th>تاريخ الإدخال</th>
+                                <th>تاريخ التعديل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var member in Model)
+                            {
+                                <tr>
+                                    <td>@member.FullName</td>
+                                    <td>@member.College.CollegeName</td>
+                                    <td>@member.CollegeDepartment.DepartmentName</td>
+                                    <td>@member.JobTitle.JobTitleName</td>
+                                    <td>@member.User.FullName</td>
+                                    <td>@member.UserInsertedDate.ToString() </td>
+                                    <td>@member.UserUpdatedDate.ToString()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="text-center my-3">
+                        @Html.PagedListPager(Model, page => Url.Action("FacultyMembers", new { page }), PagedListRenderOptions.Classic)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function loadSection(section) {
+        let menu = document.getElementById('menuList');
+        let urlMap = {
+            'users': menu.dataset.usersUrl,
+            'reports': menu.dataset.reportsUrl,
+            'departments': menu.dataset.departmentsUrl,
+            'faculty': menu.dataset.facultyUrl
+        };
+
+        let url = urlMap[section];
+        if (url) {
+            $("#dashboardContent").html('<div class="text-center p-4"><div class="spinner-border text-info"></div></div>');
+            $.get(url, function (data) {
+                $("#dashboardContent").html(data);
+            }).fail(function () {
+                alert("فشل في تحميل البيانات. تحقق من الرابط والـ Partial View!");
+            });
+        }
+    }
+</script>

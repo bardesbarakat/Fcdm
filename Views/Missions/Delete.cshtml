@@ -1,0 +1,30 @@
+﻿@model cdm.Models.Mission
+@{
+    ViewBag.Title = "تأكيد حذف البعثة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-warning text-white">
+            <h4><i class="bi bi-trash"></i> تأكيد حذف البعثة</h4>
+        </div>
+        <div class="card-body">
+            <p>هل أنت متأكد من حذف البعثة الخاصة بـ <strong>@Model.FacultyMember.FullName</strong>؟</p>
+            <p><strong>نوع البعثة الخاصة به:</strong> @Model.MainMissionType</p>
+            <p><strong>الجامعة:</strong> @Model.UniversityName</p>
+            <p><strong>الدولة:</strong> @Model.Country</p>
+            <p><strong>تاريخ السفر:</strong> @Model.TravelDate.Value.ToString("yyyy-MM-dd")</p>
+
+            @using (Html.BeginForm("DeleteConfirmed", "Missions", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", Model.MissionID)
+
+
+
+                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> تأكيد الحذف</button>
+                <a href="@Url.Action("Index", "Missions")" class="btn btn-secondary ms-2">إلغاء</a>
+            }
+        </div>
+    </div>
+</div>

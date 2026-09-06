@@ -1,0 +1,239 @@
+﻿@model cdm.Models.MissionWithFacultyVM
+@{
+    ViewBag.Title = "تعديل بيانات البعثة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var type = Model.Mission.MainMissionType;
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0"><i class="bi bi-pencil-square"></i> تعديل بيانات البعثة</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="bg-light rounded p-3 mb-4">
+                <!-- عرض معلومات عضو هيئة التدريس فقط -->
+                <h4 class="mt-4 mb-3 text-primary">البيانات الأساسية لعضو هيئة التدريس</h4>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>الاسم:</strong> @Model.Faculty.FullName</div>
+                    <div class="col-md-4"><strong>الكلية:</strong> @Model.Faculty.College.CollegeName</div>
+                    <div class="col-md-4"><strong>القسم:</strong> @Model.Faculty.CollegeDepartment.DepartmentName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.Faculty.NationalID</div>
+                    <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.Faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                    <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.Faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.Faculty.PhoneNumber</div>
+                    <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @Model.Faculty.Email</div>
+                    <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.Faculty.JobTitle.JobTitleName</div>
+                </div>
+
+                <hr />
+
+                @using (Html.BeginForm("Edit", "Missions", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Mission.MissionID)
+                    @Html.HiddenFor(m => m.Mission.FacultyMemberID)
+                    <h4 class="mt-4 mb-3 text-primary">تفاصيل البعثة</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("نوع البعثة")
+                            @Html.TextBoxFor(m => m.Mission.MainMissionType, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("اسم الجامعة")
+                            @Html.TextBoxFor(m => m.Mission.UniversityName, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ المناقشة")
+                            @Html.TextBoxFor(m => m.Mission.DiscussionDate, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Label("الدولة")
+                            @Html.DropDownListFor(m => m.Mission.Country,
+                                ViewBag.CountryList as IEnumerable<SelectListItem>,
+                                "-- اختر الدولة --",
+                                new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("الغرض من البعثة")
+                            @Html.TextBoxFor(m => m.Mission.MissionPurpose, new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("السنة الحالية")
+                            @Html.TextBoxFor(m => m.Mission.MissionCurrentYear, new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("مدة البعثة")
+                            @Html.TextBoxFor(m => m.Mission.MissionDuration, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ السفر")
+                            @Html.TextBoxFor(m => m.Mission.TravelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ إخلاء الطرف")
+                            @Html.TextBoxFor(m => m.Mission.DepartureClearanceDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("رقم الموافقة الأمنية")
+                            @Html.TextBoxFor(m => m.Mission.SecurityApprovalNo, new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ الموافقة الأمنية")
+                            @Html.TextBoxFor(m => m.Mission.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("نوع الإجازة")
+                            @Html.TextBoxFor(m => m.Mission.VacationType, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    if (Model.Mission.MainMissionType != "بعثات خارجية" && Model.Mission.MainMissionType != "بعثات داخلية")
+                    {
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    @Html.Label("تاريخ موافقة رئيس الجامعة على القناة العلمية")
+                    @Html.TextBoxFor(m => m.Mission.UniPresidentChannelApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.Label("ملف القناة العلمية")
+                    <input type="file" name="UniPresidentChannelFileUpload" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    @Html.Label("مدة الدراسة داخل البلاد")
+                    @Html.TextBoxFor(m => m.Mission.StudyDurationInside, new { @class = "form-control" })
+                </div>
+                <div class="col-md-3">
+                    @Html.Label("مدة الدراسة خارج البلاد")
+                    @Html.TextBoxFor(m => m.Mission.StudyDurationOutside, new { @class = "form-control" })
+                </div>
+            </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ موافقة مجلس الكلية")
+                            @Html.TextBoxFor(m => m.Mission.FacultyCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ اللجنة التنفيذية")
+                            @Html.TextBoxFor(m => m.Mission.ExecCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ موافقة رئيس الجامعة")
+                            @Html.TextBoxFor(m => m.Mission.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("رقم قرار اللجنة")
+                            @Html.TextBoxFor(m => m.Mission.ExecDecisionNo, new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ قرار اللجنة")
+                            @Html.TextBoxFor(m => m.Mission.ExecDecisionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("ملف قرار رئيس الجامعة")
+                            @if (!string.IsNullOrEmpty(Model.Mission.UniPresidentDecisionFile))
+                            {
+                                <div class="mb-2">
+                                    <a href="@Url.Content("~" + Model.Mission.UniPresidentDecisionFile)" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> عرض الملف الحالي
+                                    </a>
+                                </div>
+                            }
+                            <input type="file" name="UniPresidentDecisionFileUpload" class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("مذكرة الاعتماد")
+                            @if (!string.IsNullOrEmpty(Model.Mission.AccreditationMemoFile))
+                            {
+                                <div class="mb-2">
+                                    <a href="@Url.Content("~" + Model.Mission.AccreditationMemoFile)" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> عرض الملف الحالي
+                                    </a>
+                                </div>
+                            }
+                            <input type="file" name="AccreditationMemoFileUpload" class="form-control" />
+                        </div>
+                    </div>
+                    if (Model.Mission.MainMissionType != "بعثات خارجية" && Model.Mission.MainMissionType != "بعثات داخلية")
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                @Html.Label("تاريخ موافقة رئيس الجامعة على القناة العلمية")
+                                @Html.TextBoxFor(m => m.Mission.UniPresidentChannelApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+
+                            <div class="col-md-4">
+                                @Html.Label("ملف القناة العلمية")
+                                @if (!string.IsNullOrEmpty(Model.Mission.UniPresidentChannelFile))
+                                {
+                                    <div class="mb-2">
+                                        <a href="@Url.Content("~" + Model.Mission.UniPresidentChannelFile)" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> عرض الملف الحالي
+                                        </a>
+                                    </div>
+                                }
+                                <input type="file" name="UniPresidentChannelFileUpload" class="form-control" />
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @Html.Label("اسم الضامن")
+                            @Html.TextBoxFor(m => m.Mission.GuarantorName, new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ استمارة مبعوث عائد")
+                            @Html.TextBoxFor(m => m.Mission.ReturneeFormDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="col-md-4">
+                            @Html.Label("تاريخ استلام العمل")
+                            @Html.TextBoxFor(m => m.Mission.WorkResumptionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> حفظ التعديلات</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">رجوع</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

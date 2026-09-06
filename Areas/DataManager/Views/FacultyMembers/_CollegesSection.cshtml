@@ -1,0 +1,52 @@
+﻿@inherits System.Web.Mvc.WebViewPage<cdm.Areas.DataManager.Models.FacultyExcelUploadVM>
+@{
+    ViewBag.Title = "الكليات";
+    Layout = "~/Areas/DataManager/Views/Shared/_LayoutDataManager.cshtml";
+}
+
+<h4>📚 إدارة الكليات</h4>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h6 class="card-title">إضافة كلية جديدة</h6>
+        @using (Html.BeginForm("CreateCollege", "FacultyMembers", FormMethod.Post, new { area = "DataManager" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-2">
+                <div class="col-md-5"><input name="CollegeName" class="form-control" placeholder="اسم الكلية" required /></div>
+
+                <div class="col-md-2"><button class="btn btn-primary w-100">إضافة</button></div>
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead><tr><th>ID</th><th>الاسم</th><th>إجراءات</th></tr></thead>
+    <tbody>
+        @foreach (var c in Model.Colleges)
+        {
+            var formId = $"col{c.CollegeID}";
+            <tr>
+                <td>@c.CollegeID</td>
+                <td>
+                    <form id="@formId" action="@Url.Action("UpdateCollege","FacultyMembers", new { area="DataManager"})" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="CollegeID" value="@c.CollegeID" />
+                        <input type="text" name="CollegeName" value="@c.CollegeName" class="form-control form-control-sm" />
+
+                    </form>
+                </td>
+                <td>
+                    <button type="submit" form="@formId" class="btn btn-sm btn-outline-primary">حفظ</button>
+                    @using (Html.BeginForm("DeleteCollege", "FacultyMembers", FormMethod.Post, new { area = "DataManager" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("CollegeID", c.CollegeID)
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('تأكيد الحذف؟');">حذف</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

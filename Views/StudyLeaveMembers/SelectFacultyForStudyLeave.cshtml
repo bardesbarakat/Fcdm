@@ -1,0 +1,160 @@
+﻿@model cdm.Models.StudyLeaveMember
+@{
+    ViewBag.Title = "إدخال بيانات الإجازة الدراسية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white text-center">
+            <h4><i class="bi bi-journal-plus"></i> إدخال بيانات الإجازة الدراسية</h4>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("SaveStudyLeave", "StudyLeaveMembers", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.FacultyMemberID)
+
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input class="form-control" value="@ViewBag.FacultyName" readonly />
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>الدرجة العلمية الحالية</label>
+                        @Html.TextBoxFor(m => m.CurrentAcademicDegree, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الموقف من التجنيد</label>
+                        @Html.TextBoxFor(m => m.MilitaryStatus, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الدولة الموفد اليه الدارس</label>
+                        @Html.TextBoxFor(m => m.DestinationCountry, new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>اسم الجامعة</label>
+                        @Html.TextBoxFor(m => m.UniversityName, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>نوع الإجازة</label>
+                        @Html.TextBoxFor(m => m.LeaveType, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>آخر مؤهل حاصل عليه</label>
+                        @Html.TextBoxFor(m => m.LastQualification, new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>العام الحالي للإجازة</label>
+                        @Html.TextBoxFor(m => m.CurrentYearOfLeave, new
+                        {
+                            @class = "form-control",
+                            required = "required",
+                            pattern = "\d*",
+                            title = "يرجى إدخال أرقام فقط"
+                        })
+                    </div>
+                    <div class="col-md-4">
+                        <label>الغرض من الإيفاد</label>
+                        @Html.TextBoxFor(m => m.LeavePurpose, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ إخلاء طرف العضو من الكلية</label>
+                        @Html.TextBoxFor(m => m.ClearanceDateFromCollege, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>تاريخ السفر</label>
+                        @Html.TextBoxFor(m => m.TravelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>مدة الإيفاد</label>
+                        @Html.TextBoxFor(m => m.LeaveDuration, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>قيمة المنحة</label>
+                        @Html.TextBoxFor(m => m.GrantValue, new
+                        {
+                            @class = "form-control",
+                            required = "required",
+                            pattern = "\d*",
+                            title = "يرجى إدخال رقم"
+                        })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>رقم وتاريخ الموافقة الأمنية</label>
+                        @Html.TextBoxFor(m => m.SecurityApprovalNumberAndDate, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ موافقة مجلس الكلية</label>
+                        @Html.TextBoxFor(m => m.CollegeCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>تاريخ موافقة رئيس الجامعة</label>
+                        @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>تاريخ موافقة اللجنة التنفيذية</label>
+                        @Html.TextBoxFor(m => m.ExecutiveCommitteeApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>رقم وتاريخ القرار التنفيذي لرئيس الجامعة</label>
+                        @Html.TextBoxFor(m => m.UniversityExecutiveDecision, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>نوع الإجازة (بمرتب / بدون مرتب)</label>
+                        @Html.TextBoxFor(m => m.SalaryStatus, new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>المدود</label>
+                        @Html.TextBoxFor(m => m.Extensions, new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-4">
+                        <label>مدة المنحة</label>
+                        @Html.TextBoxFor(m => m.GrantDuration, new
+                        {
+                            @class = "form-control",
+                            pattern = "\d*",
+                            title = "يرجى إدخال رقم"
+                        })
+                    </div>
+                    <div class="col-md-4">
+                        <label>اسم الضامن وصلة القرابة</label>
+                        @Html.TextBoxFor(m => m.GuarantorNameAndRelation, new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success mt-3 px-4">
+                    <i class="bi bi-save"></i> حفظ البيانات
+                </button>
+                <script>
+                    document.querySelector("form").addEventListener("submit", function (e) {
+                        var invalid = this.querySelectorAll(":invalid");
+                        if (invalid.length > 0) {
+                            e.preventDefault();
+                            alert("يرجى التأكد من تعبئة جميع الحقول المطلوبة بشكل صحيح.");
+                        }
+                    });
+                </script>
+            }
+        </div>
+    </div>
+</div>

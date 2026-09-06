@@ -1,0 +1,182 @@
+﻿@model cdm.Models.FacultyMember
+
+@{
+    ViewBag.Title = "إضافة عضو هيئة تدريس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h2 class="mb-4">إضافة عضو هيئة تدريس</h2>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <!-- الاسم في صف منفصل -->
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.FullName)
+                    @Html.TextBoxFor(model => model.FullName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- أول صف: الكلية - القسم - الدرجة -->
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">الكلية</label>
+                <span id="collegeError" class="text-danger small d-block"></span>
+                @Html.DropDownListFor(model => model.CollegeID,
+(SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", @id = "CollegeID" })
+
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">القسم</label>
+                <span id="deptError" class="text-danger small d-block"></span>
+                @Html.DropDownListFor(model => model.College_DepartmentID,
+new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+"-- اختر القسم --", new { @class = "form-control", @id = "College_DepartmentID" })
+
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.Specialization)
+                @Html.TextBoxFor(model => model.Specialization, new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-3">
+                @Html.Label("الدرجة الوظيفية:")
+                @Html.DropDownListFor(model => model.ID_JobTitle, ViewBag.JobTitles as SelectList, "-- اختر الدرجة --",
+                    new { @class = "form-control", id = "JobTitle" })
+                @Html.ValidationMessageFor(model => model.ID_JobTitle, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+                <!-- صف: Email - Phone - Gender -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Email)
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.PhoneNumber)
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Gender)
+                        @Html.DropDownListFor(model => model.Gender, new SelectList(new[] {
+                            new { Value = "ذكر", Text = "ذكر" },
+                            new { Value = "أنثى", Text = "أنثى" }
+                        }, "Value", "Text"), "-- اختر النوع --", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- صف: BirthDate - HireDate - NationalID -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.BirthDate)
+                        @Html.TextBoxFor(model => model.BirthDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.HireDate)
+                        @Html.TextBoxFor(model => model.HireDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.HireDate, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.NationalID)
+
+                        @Html.TextBoxFor(model => model.NationalID, new
+                        {
+                            @class = "form-control",
+                            maxlength = "14",
+                            pattern = "\\d{14}",
+                            title = "الرقم القومي يجب أن يتكون من 14 رقمًا"
+                        })
+
+                        @Html.ValidationMessageFor(model => model.NationalID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- صف: InsuranceNumber فقط -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.InsuranceNumber)
+                        @Html.TextBoxFor(model => model.InsuranceNumber, new
+                        {
+                            @class = "form-control",
+                            maxlength = "8",
+                            pattern = "\\d{8}",
+                            title = "يجب إدخال 8 أرقام فقط"
+                        })
+                        @Html.ValidationMessageFor(model => model.InsuranceNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-success">حفظ</button>
+                    @Html.ActionLink("إلغاء", "Index", null, new { @class = "btn btn-secondary ms-2" })
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts 
+    {
+    <script>
+        $(document).ready(function () {
+            $("#CollegeID").change(function () {
+                var collegeId = $(this).val();
+
+                if (collegeId) {
+                  $.getJSON('@Url.Action("GetDepartmentsByCollege", "FacultyMembers")', { collegeId: collegeId }, function (data) {
+
+                        var deptDropdown = $("#College_DepartmentID");
+                        deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                        $.each(data, function (i, item) {
+                            deptDropdown.append($('<option>', {
+                                value: item.Value,
+                                text: item.Text
+                            }));
+                        });
+                    });
+                } else {
+                    $("#College_DepartmentID").empty().append('<option value="">-- اختر القسم --</option>');
+                }
+            });
+        });
+            $("#departmentDropdown, #jobTitleDropdown").change(function () {
+                let deptId = $("#departmentDropdown").val();
+                let jobTitleId = $("#jobTitleDropdown").val();
+                if (!deptId || !jobTitleId) return;
+
+                $.get('@Url.Action("GetFacultyByDeptAndTitle", "StudyLeaveMembers")', { departmentId: deptId, jobTitleId: jobTitleId }, function (data) {
+                    let facultyDropdown = $("#facultyDropdown");
+                    facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                    $.each(data, function (i, item) {
+                        facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            });
+
+            function loadJobTitles() {
+                $.get('@Url.Action("GetAllJobTitles", "StudyLeaveMembers")', function (data) {
+                    let dropdown = $("#jobTitleDropdown");
+                    dropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+                    $.each(data, function (i, item) {
+                        dropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            }
+
+    </script>
+}

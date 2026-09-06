@@ -1,0 +1,96 @@
+﻿@model cdm.Models.User
+@{
+    var roles = ViewBag.Roles as SelectList;
+}
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editUserForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">تعديل المستخدم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="UserID" value="@Model.UserID" />
+
+
+                    <div class="mb-3">
+                        <label class="form-label">اسم المستخدم</label>
+                        <input type="text" name="Username" class="form-control" value="@Model.Username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="text" name="PasswordHash" class="form-control" value="@Model.PasswordHash" required />
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label">الاسم الكامل</label>
+                        <input type="text" name="FullName" class="form-control" value="@Model.FullName" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" name="Email" class="form-control" value="@Model.Email" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">رقم الهاتف</label>
+                        <input type="text" name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">الدور</label>
+                        @Html.DropDownList("RoleID", roles, "-- اختر الدور --", new { @class = "form-select", @required = "required" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">نشط؟</label>
+                        <select name="IsActive" class="form-select" required>
+                            <option value="true" @(Model.IsActive == true ? "selected" : "")>نعم</option>
+                            <option value="false" @(Model.IsActive == false ? "selected" : "")>لا</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">حفظ التعديلات</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#editUserForm').submit(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '/Account/EditUser',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (res) {
+                console.log("🧾 رد السيرفر:", res);
+
+                if (res.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    modal.hide();
+                    loadSection('users');
+                } else {
+                    let msg = res.message || "حدث خطأ أثناء الحفظ.";
+                    if (res.errors) {
+                        msg += "\n" + res.errors.join("\n");
+                    }
+                    alert(msg);
+                }
+            },
+            error: function (xhr) {
+                alert("فشل الاتصال بالخادم.");
+                console.error("AJAX Error:", xhr.responseText);
+            }
+        });
+    });
+</script>

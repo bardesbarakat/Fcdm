@@ -1,0 +1,13 @@
+@model Member
+@{
+    ViewBag.Title = "Delete Member";
+}
+<h2 class="my-4 text-danger">Delete Member</h2>
+<div class="alert alert-warning">
+    Are you sure you want to delete <strong>@Model.FullName</strong>?
+</div>
+@using (Html.BeginForm("DeleteConfirmed", "Members", FormMethod.Post)) {
+    @Html.HiddenFor(m => m.MemberID)
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+}

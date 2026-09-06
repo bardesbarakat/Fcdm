@@ -1,0 +1,51 @@
+﻿@model cdm.Models.StudyLeaveMember
+
+<!-- جدول التفاصيل -->
+<div class="table-responsive" id="printableDetails">
+    <div style="direction: rtl; font-family: 'Arial', sans-serif;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: right;">
+                <img src="/Content/university-logo.png" alt="شعار الجامعة" style="height: 80px; margin-bottom: 10px;" />
+            </div>
+        </div>
+
+        <h3 style="text-align: center; margin: 20px 0;">تفاصيل الإجازة الدراسية</h3>
+
+        <table class="table table-bordered table-striped" style="width: 100%;">
+            <tr><th>اسم عضو هيئة التدريس</th><td>@Model.FacultyMember?.FullName</td></tr>
+            <tr><th>القسم</th><td>@Model.Department?.DepartmentName</td></tr>
+            <tr><th>الدرجة العلمية الحالية</th><td>@Model.CurrentAcademicDegree</td></tr>
+            <tr><th>الموقف من التجنيد</th><td>@Model.MilitaryStatus</td></tr>
+            <tr><th>الدولة الموفد إليها</th><td>@Model.DestinationCountry</td></tr>
+            <tr><th>اسم الجامعة</th><td>@Model.UniversityName</td></tr>
+            <tr><th>نوع الإجازة</th><td>@Model.LeaveType</td></tr>
+            <tr><th>آخر مؤهل</th><td>@Model.LastQualification</td></tr>
+            <tr><th>العام الحالي للإجازة</th><td>@Model.CurrentYearOfLeave</td></tr>
+            <tr><th>الغرض من الإيفاد</th><td>@Model.LeavePurpose</td></tr>
+            <tr><th>تاريخ إخلاء الطرف</th><td>@Model.ClearanceDateFromCollege?.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>تاريخ السفر</th><td>@Model.TravelDate?.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>مدة الإجازة</th><td>@Model.LeaveDuration</td></tr>
+            <tr><th>قيمة المنحة</th><td>@Model.GrantValue</td></tr>
+            <tr><th>رقم وتاريخ الموافقة الأمنية</th><td>@Model.SecurityApprovalNumberAndDate</td></tr>
+            <tr><th>موافقة مجلس الكلية</th><td>@Model.CollegeCouncilApprovalDate?.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>موافقة رئيس الجامعة</th><td>@Model.UniversityPresidentApprovalDate?.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>موافقة اللجنة التنفيذية</th><td>@Model.ExecutiveCommitteeApprovalDate?.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>القرار التنفيذي لرئيس الجامعة</th><td>@Model.UniversityExecutiveDecision</td></tr>
+            <tr><th>حالة المرتب</th><td>@Model.SalaryStatus</td></tr>
+            <tr><th>عدد أو تفاصيل المدود</th><td>@Model.Extensions</td></tr>
+            <tr><th>مدة المنحة</th><td>@Model.GrantDuration</td></tr>
+            <tr><th>اسم الضامن وصلة القرابة</th><td>@Model.GuarantorNameAndRelation</td></tr>
+        </table>
+
+        <div style="text-align: left; font-size: 12px; color: gray; margin-top: 30px;">
+            تم التصدير بتاريخ: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+        </div>
+    </div>
+</div>
+
+<!-- أزرار التصدير -->
+<div class="text-center mt-4 no-print">
+    <button type="button" onclick="printDetails()" class="btn btn-outline-secondary me-2">🖨️ طباعة</button>
+    <button type="button" onclick="downloadPdf()" class="btn btn-outline-success me-2">📄 PDF</button>
+    <button type="button" onclick="downloadExcel()" class="btn btn-outline-primary">📊 Excel</button>
+</div>

@@ -1,0 +1,81 @@
+﻿@model List<cdm.Models.ExpandedSummaryRowVM>
+@{
+    var fromDate = Request["fromDate"];
+    var toDate = Request["toDate"];
+}
+
+<div class="text-center mb-4">
+    <h5 class="fw-bold text-danger">
+        بيان إحصائى عن (البعثات - الإجازات الدراسية - المنح - المهمات العلمية - الإعارات - الأساتذة الزائرين)
+        للعام الجامعى @fromDate وحتى @toDate
+    </h5>
+</div>
+
+<table class="table table-bordered text-center align-middle shadow-sm">
+    <thead>
+        <tr class="table-secondary fw-bold">
+            <th rowspan="2" style="vertical-align: middle;">الكلية</th>
+            <th colspan="3" class="table-info">البعثات</th>
+            <th colspan="2" class="table-warning">الإجازات الدراسية</th>
+            <th class="table-success">المنح</th>
+            <th class="table-light">المهمات العلمية</th>
+            <th colspan="2" class="table-primary">الإعارات</th>
+            <th colspan="2" class="table-danger">الأساتذة الزائرين</th>
+        </tr>
+        <tr>
+            <th>داخلية</th>
+            <th>خارجية</th>
+            <th>إشراف مشترك</th>
+            <th>داخلية</th>
+            <th>خارجية</th>
+            <th>عدد المنح</th>
+            <th>عدد المهمات</th>
+            <th>داخلية</th>
+            <th>خارجية</th>
+            <th>من الداخل للخارج</th>
+            <th>من الخارج للداخل</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CollegeName</td>
+                <td>@item.InternalMissions</td>
+                <td>@item.ExternalMissions</td>
+                <td>@item.JointSupervisionMissions</td>
+                <td>@item.InternalStudyLeaves</td>
+                <td>@item.ExternalStudyLeaves</td>
+                <td>@item.GrantsCount</td>
+                <td>@item.ScientificMissionsCount</td>
+                <td>@item.InternalSecondments</td>
+                <td>@item.ExternalSecondments</td>
+                <td>@item.VisitingFromInsideToOutside</td>
+                <td>@item.VisitingFromOutsideToInside</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- توقيع مدير المكتب -->
+<div class="mt-5 px-4 d-print-block" style="text-align:left">
+    <p><strong class="px-5">توقيع المدير </strong> <br />_______________________</p>
+</div>
+
+<div class="text-end mt-4 d-print-none">
+    <button class="btn btn-outline-primary" onclick="printReport()">
+        🖨️ طباعة التقرير
+    </button>
+</div>
+
+
+@section scripts {
+    <script>
+    function printDetails() {
+            window.print();
+        }
+
+        function downloadPdf() {
+            alert("تصدير PDF غير مفعّل بعد، يمكن تفعيله لاحقًا باستخدام Rotativa أو jsPDF.");
+        }</script>
+}

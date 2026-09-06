@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "اختيار نوع الأستاذ الزائر";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .visitor-card {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease-in-out;
+        border-radius: 1rem;
+    }
+
+        .visitor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.2);
+            border-color: #0d6efd;
+        }
+
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(45deg, #17a2b8, #00e0ff);
+    }
+</style>
+
+<div class="container mt-5">
+    <h4 class="text-center text-primary mb-4">اختيار نوع الأستاذ الزائر</h4>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-3">
+            <div class="card visitor-card shadow text-center p-4" onclick="selectType('زائر من الخارج')">
+                <div class="icon-circle bg-gradient-primary mb-3 mx-auto">
+                    <i class="bi bi-globe-americas text-white fs-2"></i>
+                </div>
+                <h5 class="fw-bold">زائر من الخارج</h5>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card visitor-card shadow text-center p-4" onclick="selectType('زائر مصري الي الخارج')">
+                <div class="icon-circle bg-gradient-info mb-3 mx-auto">
+                    <i class="bi bi-people-fill text-white fs-2"></i>
+                </div>
+                <h5 class="fw-bold">
+                    زائر مصري الي الخارج
+                </h5>
+            </div>
+        </div>
+    </div>
+
+    <div id="selectionSection" style="display:none;" class="container mt-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient text-white text-center"
+                 style="background: linear-gradient(90deg, #007cf0, #00dfd8); border-radius: 0.5rem 0.5rem 0 0;">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i> اختيار عضو هيئة التدريس</h4>
+            </div>
+
+            <div class="card-body bg-light p-4">
+                <form id="facultyForm" onsubmit="return false;">
+                    @Html.Hidden("SelectedType", "", new { id = "HiddenTypeId" })
+                    @Html.Hidden("SelectedFaculty", "", new { id = "HiddenMemberId" })
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">الكلية</label>
+                            @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "collegeDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">القسم</label>
+                            @Html.DropDownList("DepartmentID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر القسم --", new { @class = "form-control", id = "departmentDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">الدرجة الوظيفية</label>
+                            @Html.DropDownList("JobTitleID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر الدرجة الوظيفية --", new { @class = "form-control", id = "jobTitleDropdown" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">عضو هيئة التدريس</label>
+                        @Html.DropDownList("FacultyMemberId", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-control", id = "facultyDropdown" })
+                    </div>
+
+                    <div class="form-group mt-4 text-center">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="goToForm()">
+                            <i class="bi bi-arrow-left-circle"></i> استمرار
+                        </button>
+
+                        <br/>
+                        <!-- أزرار الأعضاء -->
+                        <div class="pt-3 border-top d-inline-block">
+                            <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary btn-lg mx-2">
+                                <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                            </a>
+                            <a href="../FacultyMembers/Index" class="btn btn-lg btn-outline-primary mx-2 d-inline-flex align-items-center">
+                                <i class="bi bi-people-fill me-2"></i> إدارة أعضاء هيئة التدريس
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    function selectType(type) {
+        $("#HiddenTypeId").val(type);
+        $(".visitor-card").removeClass("selected");
+        $(".visitor-card").filter(function () {
+            return $(this).text().includes(type.split(" ")[1]);
+        }).addClass("selected");
+
+        $("#selectionSection").slideDown();
+    }
+
+    // تحميل الأقسام
+    $("#collegeDropdown").change(function () {
+        var collegeId = $(this).val();
+        if (collegeId) {
+            $.get('@Url.Action("GetDepartmentsByCollege", "VisitingProfessors")', { collegeId: collegeId }, function (data) {
+                let deptDropdown = $("#departmentDropdown");
+                deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                $.each(data, function (i, item) {
+                    deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+                $("#facultyDropdown").html('<option value="">-- اختر العضو --</option>');
+            });
+        }
+    });
+
+    // تحميل أعضاء هيئة التدريس
+    $("#departmentDropdown, #jobTitleDropdown").change(function () {
+        let deptId = $("#departmentDropdown").val();
+        let jobTitleId = $("#jobTitleDropdown").val();
+        if (!deptId || !jobTitleId) return;
+
+        $.get('@Url.Action("GetFacultyByDeptAndTitle", "VisitingProfessors")', {
+            departmentId: deptId,
+            jobTitleId: jobTitleId
+        }, function (data) {
+            let facultyDropdown = $("#facultyDropdown");
+            facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+            $.each(data, function (i, item) {
+                facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+            });
+        });
+    });
+
+    // تحميل الدرجات الوظيفية
+    $(document).ready(function () {
+        $.get('@Url.Action("GetAllJobTitles", "VisitingProfessors")', function (data) {
+            let jobDropdown = $("#jobTitleDropdown");
+            jobDropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+            $.each(data, function (i, item) {
+                jobDropdown.append($('<option>', {
+                    value: item.Value,
+                    text: item.Text
+                }));
+            });
+        });
+    });
+
+    function goToForm() {
+        const type = $("#HiddenTypeId").val();
+        const facultyId = $("#facultyDropdown").val();
+
+        if (!type || !facultyId) {
+            alert("يرجى اختيار نوع الزيارة وعضو هيئة التدريس.");
+            return;
+        }
+
+        const url = `/cdm/VisitingProfessors/Create?facultyId=${facultyId}&type=${encodeURIComponent(type)}`;
+        window.location.href = url;
+    }
+    </script>
+}

@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Departments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using cdm.Helpers
+
+<section id="departments" class="services section-bg">
+    <div class="container">
+        <div class="section-title">
+            <h2>الأقسام</h2>
+        </div>
+
+        <div class="row justify-content-center">
+            @foreach (var dept in Model)
+            {
+                var encId = EncryptionHelper.Encrypt(dept.DepartmentID.ToString());
+                string targetController = dept.DepartmentNameEN;
+
+                // ✅ رابط إدخال البيانات ➜ دايمًا يروح للـ Controller
+                string insertUrl = Url.Action("InsertData", targetController, new { encryptedId = encId });
+
+                // ✅ رابط عرض البيانات
+                string viewUrl = Url.Action("Index", targetController, new { encryptedId = encId });
+
+                <div class="col-lg-3 col-md-4 m-1" data-aos="fade-up">
+                    <div class="service-card position-relative z-1">
+                        <div class="service-icon">
+                            <i class="bi bi-building-check"></i>
+                        </div>
+
+                        <a href="@viewUrl"
+                           class="card-action d-flex align-items-center justify-content-center rounded-circle">
+                            <i class="bi bi-arrow-up-right"></i>
+                        </a>
+
+                        <h3>
+                            <a href="@viewUrl">
+                                @dept.DepartmentName
+                            </a>
+                        </h3>
+
+                        <p>
+                            <a href="@Url.Action("InsertData", targetController, new { encryptedId = encId })"
+                               class="btn btn-outline-warning btn-sm m-1">
+                                إدخال
+                            </a>
+                            <a href="@Url.Action("Index", targetController, new { encryptedId = encId })"
+                               class="btn btn-outline-secondary btn-sm m-1">
+                                عرض البيانات
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

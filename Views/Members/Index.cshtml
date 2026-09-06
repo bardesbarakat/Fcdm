@@ -1,0 +1,26 @@
+@model IEnumerable<Member>
+@{
+    ViewBag.Title = "Members";
+}
+<h2 class="my-4">Members</h2>
+<a href="@Url.Action("Create")" class="btn btn-success mb-3">+ Add Member</a>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr><th>Name</th><th>Email</th><th>Department</th><th>Join Date</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var m in Model)
+    {
+        <tr>
+            <td>@m.FullName</td>
+            <td>@m.Email</td>
+            <td>@m.Department</td>
+            <td>@(m.JoinDate?.ToString("yyyy-MM-dd"))</td>
+            <td>
+                <a href="@Url.Action("Edit", new { id = m.MemberID })" class="btn btn-warning btn-sm">Edit</a>
+                <a href="@Url.Action("Delete", new { id = m.MemberID })" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

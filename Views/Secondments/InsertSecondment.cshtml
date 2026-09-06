@@ -1,0 +1,219 @@
+﻿@model cdm.Models.SecondmentsData
+
+@{
+    ViewBag.Title = "InsertSecondment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white text-center">
+            <h4><i class="bi bi-journal-plus"></i> إدخال بيانات الاعارة </h4>
+        </div>
+        <div class="card-body">
+            @if (faculty != null)
+            {
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <h4 class=" mb-3 text-primary"> البيانات الاساسية</h4>
+                        <div class="col-md-4">
+                            <strong>اسم عضو هيئة التدريس:</strong> @faculty.FullName
+                        </div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>رقم الهاتف:</strong> @faculty.PhoneNumber</div>
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم التأميني:</strong> @faculty.InsuranceNumber</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>النوع:</strong> @faculty.Gender
+                        </div>
+                        <div class="col-md-8"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                    </div>
+                </div><hr/> }
+            else
+            {
+                <div class="alert alert-warning">
+                    لا توجد بيانات لعضو هيئة التدريس.
+                </div>
+            }
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@err.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @using (Html.BeginForm("Create", "Secondments", FormMethod.Post, new { @id = "secondmentForm", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.SecondmentsTypeId, new { id = "SecondmentsTypeId" })
+                @Html.HiddenFor(model => model.SecondmentsMemberId, new { id = "SecondmentsMemberId" })
+
+                <div id="secondmentDetailsSection">
+                    <h5 class="mb-3 text-primary">بيانات الإعارة:</h5>
+
+                    <div class="d-flex flex-wrap gap-3" id="secondmentFlexContainer">
+                        <!-- الدولة (Dropdown أو ثابت حسب نوع الإعارة) -->
+                        <div class="flex-fill" id="countryDropdownContainer">
+                            @Html.LabelFor(m => m.SecondmentsCountry, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.DropDownListFor(m => m.SecondmentsCountry, (SelectList)ViewBag.Countries, "-- اختر الدولة --", new { @class = "form-control", id = "SecondmentsCountry" })
+                        </div>
+
+                        <div class="flex-fill d-none" id="fixedCountryText">
+                            <label class="form-label text-primary">الدولة</label>
+                            <input type="text" class="form-control" value="مصر" disabled />
+                            @Html.HiddenFor(m => m.SecondmentsCountry)
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.SecondmentLocation, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecondmentLocation, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.SecondmentsYear, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecondmentsYear, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.SecondmentsStartDate, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecondmentsStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.SecondmentsEndDate, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecondmentsEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="flex-fill" id="securityApprovalNumberGroup">
+                            @Html.LabelFor(m => m.SecurityApprovalNumber, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecurityApprovalNumber, new { @class = "form-control" })
+                        </div>
+
+                        <div class="flex-fill" id="securityApprovalDateGroup">
+                            @Html.LabelFor(m => m.SecurityApprovalDate, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.ClearanceDate, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.ClearanceDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.UniversityDecisionNumber, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.UniversityDecisionNumber, new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(m => m.UniversityDecisionDate, htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(m => m.UniversityDecisionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.Label("PresidentApprovalUpload", "ملف قرار رئيس الجامعة", htmlAttributes: new { @class = "form-label text-primary" })
+                            <input type="file" name="PresidentApprovalUpload" accept=".pdf" class="form-control" required />
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.Label("AccreditationMemoUpload", "مذكرة الاعتماد", htmlAttributes: new { @class = "form-label text-primary" })
+                            <input type="file" name="AccreditationMemoUpload" accept=".pdf" class="form-control" required />
+                        </div>
+
+                        <div class="flex-fill">
+                            @Html.LabelFor(model => model.ReturnWorkDate, "تاريخ استلام العمل بعد العودة", htmlAttributes: new { @class = "form-label text-primary" })
+                            @Html.TextBoxFor(model => model.ReturnWorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-success">حفظ</button>
+                        <a href="@Url.Action("Index", "Secondments")" class="btn btn-secondary">إلغاء</a>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script>
+
+        function toggleSecurityApproval() {
+            var typeId = parseInt($("#SecondmentsTypeId").val());
+
+            if (typeId === 3) {
+                $("#securityApprovalNumberGroup").hide();
+                $("#securityApprovalDateGroup").hide();
+            } else {
+                $("#securityApprovalNumberGroup").show();
+                $("#securityApprovalDateGroup").show();
+            }
+        }
+
+        // شغل الدالة عند تحميل الصفحة
+        $(document).ready(function () {
+            toggleSecurityApproval();
+
+            // وشغلها لما المستخدم يغير نوع الإعارة
+            $("#SecondmentsTypeId").change(function () {
+                toggleSecurityApproval();
+            });
+        });
+
+        function toggleFieldsBasedOnType() {
+            var typeId = parseInt($("#SecondmentsTypeId").val());
+
+            if (typeId === 3) {
+                $("#securityApprovalNumberGroup").hide();
+                $("#securityApprovalDateGroup").hide();
+                $("#countryDropdownContainer").addClass("d-none");
+                $("#fixedCountryText").removeClass("d-none");
+            } else {
+                $("#securityApprovalNumberGroup").show();
+                $("#securityApprovalDateGroup").show();
+                $("#countryDropdownContainer").removeClass("d-none");
+                $("#fixedCountryText").addClass("d-none");
+            }
+        }
+
+        $(document).ready(function () {
+            toggleFieldsBasedOnType();
+
+            $("#SecondmentsTypeId").change(function () {
+                toggleFieldsBasedOnType();
+            });
+        });
+        $(document).ready(function () {
+            const typeId = parseInt($("#CurrentSecondmentType").val());
+
+            if (typeId === 2) {
+                $("#countryDropdownContainer").addClass("d-none");
+                $("#fixedCountryText").removeClass("d-none");
+            } else {
+                $("#countryDropdownContainer").removeClass("d-none");
+                $("#fixedCountryText").addClass("d-none");
+            }
+        });
+    </script>
+}
+

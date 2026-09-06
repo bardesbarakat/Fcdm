@@ -1,0 +1,57 @@
+﻿@inherits System.Web.Mvc.WebViewPage<cdm.Areas.DataManager.Models.FacultyExcelUploadVM>
+@{
+    ViewBag.Title = "رقع ملف الاكسل";
+    Layout = "~/Areas/DataManager/Views/Shared/_LayoutDataManager.cshtml";
+}
+
+<h4>📚 الوظائف</h4>
+
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h6 class="card-title">➕ إضافة وظيفة جديدة</h6>
+        @using (Html.BeginForm("CreateJobTitle", "FacultyMembers", FormMethod.Post, new { area = "DataManager" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-2">
+                <div class="col-md-5"><input name="JobTitleName" class="form-control" placeholder="اسم الوظيفة" required /></div>
+                <div class="col-md-5"><input name="JobTitleNameEN" class="form-control" placeholder="الاسم بالإنجليزي" /></div>
+                <div class="col-md-2 d-flex align-items-end"><button class="btn btn-primary w-100">إضافة</button></div>
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-sm table-striped align-middle">
+    <thead>
+        <tr><th>ID</th><th>الوظيفة</th><th>English</th><th style="width:220px">إجراءات</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var j in Model.JobTitles)
+        {
+            var formId = $"jt{j.JobTitleID}";
+            <tr>
+                <td>@j.JobTitleID</td>
+                <td colspan="2">
+                    <form id="@formId" action="@Url.Action("UpdateJobTitle","FacultyMembers", new { area="DataManager"})" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="JobTitleID" value="@j.JobTitleID" />
+                        <div class="row g-1">
+                            <div class="col-md-6"><input type="text" name="JobTitleName" value="@j.JobTitleName" class="form-control form-control-sm" /></div>
+                            <div class="col-md-6"><input type="text" name="JobTitleNameEN" value="@j.JobTitleNameEN" class="form-control form-control-sm" /></div>
+                        </div>
+                    </form>
+                </td>
+                <td>
+                    <button type="submit" form="@formId" class="btn btn-sm btn-outline-primary">حفظ</button>
+                    @using (Html.BeginForm("DeleteJobTitle", "FacultyMembers", FormMethod.Post, new { area = "DataManager", @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("JobTitleID", j.JobTitleID)
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('تأكيد الحذف؟');">حذف</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

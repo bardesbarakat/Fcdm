@@ -1,0 +1,106 @@
+﻿
+@model cdm.Models.Conference
+@{
+    ViewBag.Title = "إدخال بيانات المؤتمر";
+    var facultyName = ViewBag.FacultyName as string;
+    var participationType = ViewBag.Type as string;
+}
+
+<div class="card shadow-lg border-0 mt-4">
+    <div class="card-header bg-primary text-white text-center">
+        <h4 class="mb-0">إدخال بيانات المؤتمر الخارجي</h4>
+    </div>
+
+    <div class="card-body bg-light">
+        @using (Html.BeginForm("InsertData", "Conferences", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input type="hidden" name="FacultyMemberId" value="@ViewBag.FacultyId" />
+
+            <input type="hidden" name="Type" value="@ViewBag.Type" />
+
+            if (ViewBag.FacultyName != null && ViewBag.TypeText != null)
+            {
+                <div class="alert alert-info text-center">
+                    <strong>العضو المختار :</strong> @ViewBag.FacultyName &nbsp; | &nbsp;
+                    <strong>نوع المشاركة :</strong> @ViewBag.TypeText
+                </div>
+            }
+
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>عنوان المؤتمر</label>
+                    @Html.TextBoxFor(m => m.ConferenceTitle, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="col-md-6">
+                    <label>مكان الانعقاد</label>
+                    @Html.TextBoxFor(m => m.ConferenceLocation, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>فترة الانعقاد</label>
+                    @Html.TextBoxFor(m => m.ConferencePeriod, new { @class = "form-control" })
+                </div>
+                <div class="col-md-6" id="countryContainer">
+                    <label>البلد</label>
+
+                    @Html.DropDownListFor(m => m.ConferenceCountry, (SelectList)ViewBag.Countries, "-- اختر الدولة --", new { @class = "form-control", id = "Country" })
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>نوع المشاركة</label>
+                @Html.TextBoxFor(m => m.ParticipationType, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-3">
+                <input type="hidden" name="ConferenceType" value="@ViewBag.TypeText" />
+
+            </div>
+
+            <div class="mb-3">
+                <label>المساهمة</label>
+                @Html.TextBoxFor(m => m.Contribution, new { @class = "form-control" })
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>ملف قرار رئيس الجامعة</label>
+                    <input type="file" name="UniversityDecisionFile" class="form-control" accept=".pdf" />
+                </div>
+                <div class="col-md-4">
+                    <label>مذكرة الاعتماد</label>
+                    <input type="file" name="ApprovalMemoFile" class="form-control" accept=".pdf" />
+                </div>
+                <div class="col-md-4">
+                    <label>ملفات أخرى</label>
+                    <input type="file" name="OtherFiles" class="form-control" accept=".pdf" multiple />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>ملاحظات</label>
+                @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save"></i> حفظ البيانات
+                </button>
+            </div>
+        }
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var type = '@ViewBag.Type';
+            if (type === 'ConferenceInternal') {
+                $("#countryContainer").hide();
+            }
+        });
+    </script>
+}
+

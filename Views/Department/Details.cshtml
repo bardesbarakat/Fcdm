@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model cdm.Models.Department
+
+@{
+    ViewBag.Title = "تفاصيل القسم";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>تفاصيل القسم</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>اسم القسم</th>
+        <td>@Model.DepartmentName</td>
+    </tr>
+    <tr>
+        <th>الوصف</th>
+        <td>@Model.Description</td>
+    </tr>
+</table>
+
+<a href="@Url.Action("Index", "Department")" class="btn btn-secondary">رجوع</a>
+
+

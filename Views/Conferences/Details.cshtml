@@ -1,0 +1,139 @@
+﻿@model cdm.Models.Conference
+
+@{
+    ViewBag.Title = "تفاصيل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="container bg-white p-4 m-5 rounded  shadow-sm" id="printableDetails">
+    <h3 class="text-center mb-4 text-white p-3" style="background: linear-gradient(135deg, rgb(227, 161, 39), rgb(180, 100, 20)); " >تفاصيل @Model.ConferenceType</h3>
+
+    <div class="card-body">
+        <h4 class="mb-3 text-primary border-bottom pb-2">البيانات الأساسية لعضو هيئة التدريس</h4>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الاسم:</strong> @Model.FacultyMember.FullName</div>
+            <div class="col-md-4"><strong>الكلية:</strong> @Model.FacultyMember.College.CollegeName</div>
+            <div class="col-md-4"><strong>القسم:</strong> @Model.FacultyMember.CollegeDepartment.DepartmentName</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @Model.FacultyMember.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+            <div class="col-md-4"><strong>تاريخ التعيين:</strong> @Model.FacultyMember.HireDate.Value.ToString("yyyy-MM-dd")</div>
+            <div class="col-md-4"><strong>الرقم القومي:</strong> @Model.FacultyMember.NationalID</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @Model.FacultyMember.JobTitle.JobTitleName</div>
+            <div class="col-md-4"><strong>رقم الهاتف:</strong> @Model.FacultyMember.PhoneNumber</div>
+            <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @Model.FacultyMember.Email</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>الرقم التأميني:</strong> @Model.FacultyMember.InsuranceNumber</div>
+            <div class="col-md-4"><strong>النوع:</strong> @Model.FacultyMember.Gender</div>
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3 text-primary border-bottom pb-2">بيانات @Model.ConferenceType</h4>
+        <div class="row mb-3">
+            <div class="col-md-12 mb-3"><strong>العنوان:</strong> @Model.ConferenceTitle</div>
+            <div class="col-md-4"><strong>مكان الانعقاد:</strong> @Model.ConferenceLocation</div>
+            <div class="col-md-4"><strong>البلد:</strong> @Model.ConferenceCountry</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>فترة الانعقاد:</strong> @Model.ConferencePeriod</div>
+            <div class="col-md-4"><strong>نوع المشاركة:</strong> @Model.ParticipationType</div>
+            <div class="col-md-4"><strong>نوع المؤتمر:</strong> @Model.ConferenceType</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>المساهمة:</strong> @Model.Contribution</div>
+            @if (Model.ConferenceType != "مؤتمر داخلي")
+            {
+                <div class="col-md-4"><strong>رقم الموافقة الامنية:</strong> @Model.SecurityApprovalNumber</div>
+                <div class="col-md-4"><strong>تاريخ الموافقة الامنية:</strong> @Model.SecurityApprovalDate</div>
+            }
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong> (تاريخ مذكرة الاعتماد) تاريخ موافقة رئيس الجامعة:</strong> @Model.UniversityPresidentApprovalDate</div>
+            <div class="col-md-4"><strong>   تاريخ ورقم قرار رئيس الجامعه:</strong> @Model.UniversityPresidentDecision</div>
+            <div class="col-md-4"><strong>ملاحظات:</strong> @Model.Notes</div>
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3 text-primary border-bottom pb-2">الملفات</h4>
+        <div class="row mb-3">
+            @if (Model.ConferenceType != "مؤتمر داخلي")
+            {
+                <div class="col-md-4">
+                    <strong>قرار رئيس الجامعة:</strong>
+                    @if (!string.IsNullOrEmpty(Model.UniversityPresidentDecisionFile))
+                    {
+                        var fileUrl = Url.Content("~" + Model.UniversityPresidentDecisionFile);
+                        <a href="@fileUrl" target="_blank" class="btn btn-sm btn-outline-primary">عرض</a>
+                        <a href="@fileUrl" download class="btn btn-sm btn-outline-success">تحميل</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">لا يوجد ملف</span>
+                    }
+                </div>
+            }
+
+            <div class="col-md-4">
+                <strong>مذكرة الاعتماد:</strong>
+                @if (!string.IsNullOrEmpty(Model.ApprovalMemoFile))
+                {
+                    var fileUrl = Url.Content("~" + Model.ApprovalMemoFile);
+                    <a href="@fileUrl" target="_blank" class="btn btn-sm btn-outline-primary">عرض</a>
+                    <a href="@fileUrl" download class="btn btn-sm btn-outline-success">تحميل</a>
+                }
+                else
+                {
+                    <span class="text-muted">لا يوجد ملف</span>
+                }
+            </div>
+            <div class="col-md-4">
+                <strong>ملفات أخرى:</strong>
+                @if (!string.IsNullOrEmpty(Model.OtherFiles))
+                {
+                    var otherFiles = Model.OtherFiles.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    <ul class="list-unstyled">
+                        @for (int i = 0; i < otherFiles.Length; i++)
+                        {
+                            var name = System.IO.Path.GetFileName(otherFiles[i]);
+                            var url = Url.Content("~" + otherFiles[i]);
+                            <li>
+                                <span class="me-2">ملف @(i + 1):</span>
+                                <a href="@url" target="_blank" class="btn btn-sm btn-outline-primary me-1">عرض</a>
+                                <a href="@url" download class="btn btn-sm btn-outline-success">تحميل</a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="text-muted">لا توجد ملفات إضافية</span>
+                }
+            </div>
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3 text-primary">معلومات النظام</h4>
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>تاريخ الإدخال:</strong> @Model.InsertedDate.ToString("yyyy-MM-dd HH:mm")</div>
+            <div class="col-md-4"><strong>المستخدم الذي أدخل البيانات:</strong> @Model.InsertedBy</div>
+            <div class="col-md-4"><strong>تاريخ التعديل:</strong> @(Model.UpdatedDate?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-outline-secondary me-2" onclick="window.print()">🖨️ طباعة</button>
+        <a href="@Url.Action("Edit", "Conferences", new { id = Model.Id })" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> تعديل 
+        </a>
+        <a href="@Url.Action("Index", "Conferences")" class="btn btn-secondary">🔙 الرجوع للقائمة</a>
+    </div>
+</div>

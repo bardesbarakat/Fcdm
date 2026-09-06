@@ -1,0 +1,135 @@
+﻿@model cdm.Models.VisitingProfessor
+
+@{
+    ViewBag.Title = "إدخال بيانات الأستاذ الزائر";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var faculty = ViewBag.Faculty as cdm.Models.FacultyMember;
+    string visitType = ViewBag.VisitType as string;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white text-center fw-bold fs-5">
+            <i class="bi bi-person-plus-fill me-2"></i> إضافة أستاذ زائر (@visitType)
+        </div>
+
+        <div class="card-body p-4">
+
+            <!-- بيانات عضو هيئة التدريس -->
+            @if (faculty != null)
+            {
+                <div class="mb-4 p-3 bg-light border rounded shadow-sm">
+                    <h5 class="text-primary"><i class="bi bi-person-badge-fill"></i> بيانات عضو هيئة التدريس</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4"><strong>الاسم:</strong> @faculty.FullName</div>
+                        <div class="col-md-4"><strong>الكلية:</strong> @faculty.College.CollegeName</div>
+                        <div class="col-md-4"><strong>القسم:</strong> @faculty.CollegeDepartment.DepartmentName</div>
+                        <div class="col-md-4"><strong>الدرجة الوظيفية:</strong> @faculty.JobTitle.JobTitleName</div>
+                        <div class="col-md-4"><strong>البريد الإلكتروني:</strong> @faculty.Email</div>
+                        <div class="col-md-4"><strong>رقم التواصل:</strong> @faculty.PhoneNumber</div>
+                        <div class="col-md-4"><strong>النوع:</strong> @faculty.Gender</div>
+                        <div class="col-md-4"><strong>تاريخ الميلاد:</strong> @faculty.BirthDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>تاريخ التعيين:</strong> @faculty.HireDate.Value.ToString("yyyy-MM-dd")</div>
+                        <div class="col-md-4"><strong>الرقم القومي:</strong> @faculty.NationalID</div>
+                        <div class="col-md-4"><strong>رقم التأمين:</strong> @faculty.InsuranceNumber</div>
+
+                    </div>
+                </div>
+
+            }
+
+            @using (Html.BeginForm("Create", "VisitingProfessors", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.FacultyMemberID)
+                <input type="hidden" name="VisitType" value="@visitType" /> <!-- هذا السطر المهم -->
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+
+                        @Html.LabelFor(m => m.Country)
+                        @Html.DropDownListFor(m => m.Country, ViewBag.Countries as SelectList, "-- اختر الدولة --", new
+                        {
+                            @class = "form-control",
+                        required = "required"
+                        })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => m.VisitStartDate)
+                        @Html.TextBoxFor(m => m.VisitStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => m.VisitEndDate)
+                        @Html.TextBoxFor(m => m.VisitEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+
+                    <div class="col-md-12">
+                        @Html.LabelFor(m => m.VisitPurpose)
+                        @Html.TextAreaFor(m => m.VisitPurpose, new { @class = "form-control", rows = 3, required = "required" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.SecurityApprovalNoAndDate)
+                        @Html.TextBoxFor(m => m.SecurityApprovalNoAndDate, new { @class = "form-control", required = "required" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.CollegeCouncilApprovalDate)
+                        @Html.TextBoxFor(m => m.CollegeCouncilApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.UniversityPresidentApprovalDate)
+                        @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.ExecutiveDecisionNoAndDate)
+                        @Html.TextBoxFor(m => m.ExecutiveDecisionNoAndDate, new { @class = "form-control", required = "required" })
+                    </div>
+
+                    <div class="col-md-6" id="visitorUniversityNameGroup">
+                        @Html.LabelFor(m => m.VisitorUniversityName)
+                        @Html.TextBoxFor(m => m.VisitorUniversityName, new { @class = "form-control" })
+                    </div>
+
+                    <div class="col-md-6" id="hostCollegeGroup">
+                        @Html.LabelFor(m => m.HostCollege)
+                        @Html.TextBoxFor(m => m.HostCollege, new { @class = "form-control" })
+                    </div>
+
+
+                    <div class="col-md-6">
+                        @Html.Label("ملف مذكرة الاعتماد")
+                        <input type="file" name="AccreditationMemoFileUpload" class="form-control" required accept=".pdf" />
+                    </div>
+
+                    <div class="col-md-6">
+                        @Html.Label("ملف موافقة رئيس الجامعة")
+                        <input type="file" name="PresidentApprovalFileUpload" class="form-control" required accept=".pdf" />
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle"></i> حفظ البيانات
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var visitType = "@visitType".trim();
+            if (visitType === "زائر مصري الي الخارج") {
+                document.getElementById("visitorUniversityNameGroup").style.display = "none";
+                document.getElementById("hostCollegeGroup").style.display = "none";
+            }
+        });
+    </script>
+}

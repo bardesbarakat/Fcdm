@@ -1,0 +1,256 @@
+﻿@model IEnumerable<cdm.Models.StudyLeaveWithRenewalVM>
+
+@{
+    ViewBag.Title = "قائمة الإجازات الدراسية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <!-- عنوان رئيسي + شريط الأدوات -->
+    <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap pb-2">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-list-task"></i> قائمة الإجازات الدراسية
+            </h4>
+            <a href="@Url.Action("InsertData", "StudyLeaveMembers")" class="btn btn-success mb-3">
+                <i class="bi bi-plus-circle-fill"></i> إضافة إجازة جديدة
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Index", "StudyLeaveMembers", FormMethod.Get, new { @class = "row g-2 pt-1" }))
+        {
+            <div class="col-md-5">
+                @Html.TextBox("FacultyName", Request["FacultyName"], new { @class = "form-control", placeholder = "ابحث باسم العضو..." })
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "StudyLeaveMembers")" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> مسح الفلاتر
+                </a>
+            </div>
+        }
+    </div>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success text-center shadow-sm">
+            <strong>@ViewBag.Message</strong>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center align-middle bg-white shadow-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>الاسم</th>
+                    <th>البلد</th>
+                    <th>نوع الإجازة</th>
+                    <th>تاريخ السفر</th>
+                    <th>مدة الإجازة</th>
+                    <th>التجديد</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    int counter = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@item.StudyLeave.FacultyMember.FullName</td>
+                            <td>@item.StudyLeave.DestinationCountry</td>
+                            <td>@item.StudyLeave.LeaveType</td>
+                            <td>@(item.StudyLeave.TravelDate.HasValue ? item.StudyLeave.TravelDate.Value.ToString("yyyy-MM-dd") : "—")</td>
+
+                            <td>@item.StudyLeave.LeaveDuration</td>
+                            <td class="fw-bold @(item.HasRenewal ? "text-success" : "text-danger")">
+                                @(item.HasRenewal ? "✔ تم التجديد" : "✖ لم يتم التجديد")
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                    <a href="@Url.Action("Renew", "StudyLeaveMembers", new { id = item.StudyLeave.LeaveID })" class="btn btn-sm btn-info">تجديد</a>
+                                    <a href="@Url.Action("DetailsPartial", "StudyLeaveMembers", new { id = item.StudyLeave.LeaveID })" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> عرض
+                                    </a><br/>
+                                    <a href="@Url.Action("Edit", "StudyLeaveMembers", new { id = item.StudyLeave.LeaveID })" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil-square"></i> تعديل
+                                    </a>
+                                    <a href="@Url.Action("Delete", "StudyLeaveMembers", new { id = item.StudyLeave.LeaveID })" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> حذف
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-danger">لا توجد إجازات مسجلة</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Modal لعرض التفاصيل -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detailsModalLabel">تفاصيل الإجازة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                جاري التحميل...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- سكربت التصفية التلقائية + فتح المودال -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var filtersForm = document.getElementById("filterForm");
+        if (filtersForm) {
+            filtersForm.querySelectorAll("select").forEach(function (select) {
+                select.addEventListener("change", function () {
+                    filtersForm.submit();
+                });
+            });
+        }
+    });
+
+    function confirmDelete(id) {
+        if (confirm("⚠️ هل أنت متأكد من حذف هذه الإجازة؟ لا يمكن التراجع بعد ذلك!")) {
+            window.location.href = '/StudyLeaveMembers/ViewDeleteLog/' + id;
+        }
+    }
+
+
+
+
+    function clearFilters() {
+        var form = document.getElementById("filterForm");
+        if (form) {
+            form.querySelectorAll("select").forEach(function (select) {
+                select.selectedIndex = 0;
+            });
+            form.submit();
+        }
+    }
+
+    function showDetails(leaveId) {
+        fetch('StudyLeaveMembers/DetailsPartial/' + leaveId)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('detailsContent').innerHTML = html;
+                var modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+                modal.show();
+            })
+            .catch(() => {
+                document.getElementById('detailsContent').innerHTML = "<div class='text-danger'>فشل في تحميل التفاصيل</div>";
+            });
+    }
+</script>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        function getMetaInfo() {
+            const meta = document.getElementById("exportMeta");
+            return {
+                facultyName: meta ? meta.dataset.faculty : "",
+                departmentName: meta ? meta.dataset.department : "",
+                now: new Date().toLocaleString('ar-EG')
+            };
+        }
+
+        function printDetails() {
+            const content = document.getElementById("printableDetails");
+            if (!content) return alert("لا يوجد محتوى للطباعة");
+            const win = window.open('', '', 'width=800,height=600');
+            win.document.write('<html><head><title>طباعة</title>');
+            win.document.write('<link rel="stylesheet" href="/Content/bootstrap.min.css" />');
+            win.document.write('</head><body class="p-4">');
+            win.document.write(content.innerHTML);
+            win.document.write('</body></html>');
+            win.document.close();
+            win.focus();
+            win.print();
+            win.close();
+        }
+
+        function downloadPdf() {
+            const { facultyName, departmentName, now } = getMetaInfo();
+            const content = `
+                            <div style="text-align:center; margin-bottom: 20px;">
+                                <img src="/Content/university-logo.png" alt="شعار الجامعة" style="height: 80px;" />
+                                <h3>تفاصيل الإجازة الدراسية</h3>
+
+                                <div style="font-size: 12px; color: gray;">تم التصدير بتاريخ: ${now}</div>
+                            </div>
+                            ${document.getElementById("printableDetails").innerHTML}
+                            <div style="margin-top: 50px; text-align: left;">
+                                <div style="display: inline-block; width: 50%;">
+                                    <strong>مسؤول القسم</strong><br>
+                                        .......................
+                                </div>
+                                <div style="display: inline-block; width: 45%; text-align: right;">
+                                    <img src="/Content/stamp.png" alt="الختم" style="height: 80px;" />
+                                </div>
+                            </div>
+                            `;
+            const element = document.createElement("div");
+            element.innerHTML = content;
+            html2pdf().set({
+                margin: 0.5,
+                filename: 'تفاصيل-الإجازة.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).from(element).save();
+        }
+
+        function downloadExcel() {
+            const { facultyName, departmentName, now } = getMetaInfo();
+            const table = document.querySelector("#printableDetails table");
+            if (!table) return alert("لا يوجد جدول للتصدير");
+
+            const ws = XLSX.utils.table_to_sheet(table);
+
+            XLSX.utils.sheet_add_aoa(ws, [
+                ["جامعة المستقبل"],
+                ["تفاصيل الإجازة الدراسية"],
+                ["الاسم: " + facultyName],
+                ["القسم: " + departmentName],
+                ["تاريخ التصدير: " + now],
+                [""]
+            ], { origin: "A1" });
+
+            const lastRow = XLSX.utils.decode_range(ws["!ref"]).e.r + 3;
+            XLSX.utils.sheet_add_aoa(ws, [
+                ["مسؤول القسم", "", "", "", "", "", "", "الختم:"],
+                [".......................", "", "", "", "", "", "", "تم الاعتماد"]
+            ], { origin: `A${lastRow}` });
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "تفاصيل الإجازة");
+            XLSX.writeFile(wb, "تفاصيل-الإجازة.xlsx");
+        }
+    </script>
+}

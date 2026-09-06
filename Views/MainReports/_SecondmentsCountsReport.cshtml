@@ -1,0 +1,132 @@
+﻿@model List<cdm.Models.SecondmentCountByJobVM>
+@{
+    Layout = null;
+    var totalMale = ViewBag.TotalMale ?? 0;
+    var totalFemale = ViewBag.TotalFemale ?? 0;
+    var totalAll = ViewBag.TotalAll ?? 0;
+    var collegeName = ViewBag.College ?? "—";
+    var year = ViewBag.Year ?? ".... / ....";
+    int rowNumber = 1;
+}
+
+<div id="printArea" style="padding: 20px; font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl;">
+    <div class="text-center mb-4">
+        <h5 class="fw-bold text-decoration-underline">بيان بأعداد أعضاء هيئة التدريس المعارين للعام الجامعي @year (كلية @collegeName)</h5>
+    </div>
+
+    <table class="table table-bordered text-center" style="width: 100%; border: 1px solid black; border-collapse: collapse;">
+        <thead style="background-color: #f0f0f0;">
+            <tr>
+                <th rowspan="2" style="border: 1px solid black;">م</th>
+                <th rowspan="2" style="border: 1px solid black;">الوظيفة</th>
+                <th colspan="2" style="border: 1px solid black;">ذكور</th>
+                <th colspan="2" style="border: 1px solid black;">إناث</th>
+                <th colspan="2" style="border: 1px solid black;">الإجمالي</th>
+            </tr>
+            <tr>
+                <th style="border: 1px solid black;">ذ</th>
+                <th style="border: 1px solid black;">ث</th>
+                <th style="border: 1px solid black;">ذ</th>
+                <th style="border: 1px solid black;">ث</th>
+                <th style="border: 1px solid black;">ذ</th>
+                <th style="border: 1px solid black;">ث</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td style="border: 1px solid black;">@rowNumber</td>
+                    <td style="border: 1px solid black;">@row.JobTitle</td>
+                    <td style="border: 1px solid black;">@row.MaleCount</td>
+                    <td style="border: 1px solid black;">0</td>
+                    <td style="border: 1px solid black;">@row.FemaleCount</td>
+                    <td style="border: 1px solid black;">0</td>
+                    <td style="border: 1px solid black;">@(row.MaleCount + row.FemaleCount)</td>
+                    <td style="border: 1px solid black;">0</td>
+                </tr>
+                rowNumber++;
+            }
+
+            <tr style="font-weight: bold; background-color: #e0e0e0;">
+                <td colspan="2" style="border: 1px solid black;">الإجمالي</td>
+                <td style="border: 1px solid black;">@totalMale</td>
+                <td style="border: 1px solid black;">0</td>
+                <td style="border: 1px solid black;">@totalFemale</td>
+                <td style="border: 1px solid black;">0</td>
+                <td style="border: 1px solid black;">@totalAll</td>
+                <td style="border: 1px solid black;">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="mt-5 px-4 d-print-block" style="text-align:left">
+        <p><strong class="px-5">توقيع المدير </strong> <br />_______________________</p>
+    </div>
+    <div class="text-end mt-3">
+        <p><strong>تاريخ الطباعة:</strong> @DateTime.Now.ToString("yyyy-MM-dd")</p>
+    </div>
+</div>
+
+<div class="text-end mt-4 d-print-none">
+    <button class="btn btn-outline-primary" onclick="printReport()">
+        🖨️ طباعة التقرير
+    </button>
+</div>
+
+<script>
+    function printReport() {
+        const content = document.getElementById("printArea").innerHTML;
+        const printWindow = window.open('', '', 'width=1000,height=800');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>تقرير المعارين حسب الدرجة</title>
+                    <style>
+                        body { direction: rtl; font-family: "Segoe UI", Tahoma, sans-serif; padding: 20px; }
+                        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 6px; }
+                        th { background-color: #f0f0f0; }
+                        h5 { text-decoration: underline; margin-bottom: 20px; }
+                        .text-end { text-align: right; }
+                        .text-center { text-align: center; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${content}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+</script>
+
+<!-- CSS للطباعة -->
+<style>
+    @@media print {
+        body {
+            direction: rtl;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            padding: 20px;
+        }
+
+        .d-print-none {
+            display: none !important;
+        }
+
+        #reportTable, #reportTable th, #reportTable td {
+            border: 1px solid black !important;
+            border-collapse: collapse !important;
+        }
+
+            #reportTable th, #reportTable td {
+                padding: 6px !important;
+            }
+
+            #reportTable thead {
+                background-color: #d1e7dd !important; /* شبيه بـ table-success */
+                color: #0f5132;
+            }
+    }
+</style>
+
+

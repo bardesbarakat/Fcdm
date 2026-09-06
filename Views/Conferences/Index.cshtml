@@ -1,0 +1,134 @@
+﻿@model cdm.Models.ConferenceAndParticipationVM
+
+@{
+    ViewBag.Title = "قائمة الفعاليات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap pb-2">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-calendar-event"></i> قائمة الفعاليات
+            </h4>
+            <a href="@Url.Action("InsertData", "Conferences")" class="btn btn-success mb-3">
+                <i class="bi bi-plus-circle-fill"></i> إضافة فعالية جديدة
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Index", "Conferences", FormMethod.Get, new { @class = "row g-2 pt-1" }))
+        {
+            <div class="col-md-5">
+                @Html.TextBox("FacultyName", Request["FacultyName"], new { @class = "form-control", placeholder = "ابحث باسم العضو..." })
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Conferences")" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> مسح الفلاتر
+                </a>
+            </div>
+        }
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success text-center shadow-sm mt-3">
+                <strong>@ViewBag.Message</strong>
+            </div>
+        }
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center align-middle bg-white shadow-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>الاسم</th>
+                   
+                    <th>عنوان الفعالية</th>
+                    <th>نوع الفعالية</th>
+                    <th>مكان الانعقاد</th>
+                    <th>الفترة</th>
+                  
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int counter = 1;
+
+                    // المؤتمرات
+                    foreach (var item in Model.Conferences)
+                    {
+                                <tr>
+                                    <td>@counter</td>
+                                    <td>@item.FacultyMember.FullName</td>
+                                   
+                                    <td>@item.ConferenceTitle</td>
+                                    <td>@item.ConferenceType</td>
+                                    <td>@item.ConferenceLocation</td>
+                                    <td>@item.ConferencePeriod</td>
+                                  
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                            <a href="@( Url.Action("Details", "Conferences", new { id = item.Id }))" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> عرض
+                                            </a>
+
+                                            <a href="@Url.Action("Edit", "Conferences", new { id = item.Id })" class="btn btn-sm btn-outline-warning">
+                                                <i class="bi bi-pencil-square"></i> تعديل
+                                            </a>
+                                            <a href="@( Url.Action("Delete", "Conferences", new { id = item.Id }))"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> حذف
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                        counter++;
+                    }
+
+                    // المشاركات (ورش / اجتماعات / دورات)
+                    foreach (var item in Model.Participations)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@item.FacultyMember.FullName</td>
+                           
+                            <td>@item.Title</td>
+                            <td>@item.Type</td>
+                            <td>@item.Location</td>
+                            <td>@item.Period</td>
+                           
+                            <td>
+                                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                    <a href="@Url.Action("Details", "Participations", new { id = item.Id })" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> عرض
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Participations", new { id = item.Id })" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil-square"></i> تعديل
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Participations", new { id = item.Id })" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> حذف
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+
+                    if (!Model.Conferences.Any() && !Model.Participations.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-danger">لا توجد فعاليات مسجلة</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

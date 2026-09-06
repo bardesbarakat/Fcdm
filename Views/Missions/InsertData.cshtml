@@ -1,0 +1,227 @@
+﻿@model cdm.Models.Mission
+@using cdm.Helpers
+@{
+    ViewBag.Title = "اختيار نوع البعثة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-primary">
+            <i class="bi bi-compass-fill me-2"></i> اختر نوع البعثة
+        </h3>
+        <p class="text-muted">برجاء اختيار نوع البعثة التي ترغب في إضافتها</p>
+    </div>
+
+    <div class="row justify-content-center g-4"  id="typeCards">
+
+        <!-- بعثة خارجية -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow h-100 text-center hover-shadow transition">
+                <div class="card-body">
+                    <i class="bi bi-globe-americas text-primary display-4 mb-3"></i>
+                    <div class="type-title fs-4 fw-bold text-primary">بعثات خارجية</div>
+                    <p class="text-muted mt-2">بعثات دراسية أو بحثية خارج مصر</p>
+                    <button onclick="setSelectedType('ExternalMission')" class="btn btn-primary mt-2 w-100">
+
+                        <i class="bi bi-arrow-left-circle-fill"></i> اختر
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- بعثة داخلية -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow h-100 text-center hover-shadow transition">
+                <div class="card-body">
+                    <i class="bi bi-house-door-fill text-success display-4 mb-3"></i>
+                    <div class="type-title fs-4 fw-bold text-success">
+                        بعثات داخلية
+                    </div>
+                    <p class="text-muted mt-2">دراسة أو إشراف داخل الجامعات المصرية</p>
+                    <button onclick="setSelectedType('InternalMission')" class="btn btn-success mt-2 w-100">
+                        <i class="bi bi-arrow-left-circle-fill"></i> اختر
+                    </button>
+                </div>
+                </div>
+        </div>
+
+        <!-- إشراف مشترك -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow h-100 text-center hover-shadow transition">
+                <div class="card-body">
+                    <i class="bi bi-person-lines-fill text-warning display-4 mb-3"></i>
+                    <div class="type-title fs-4 fw-bold text-warning">
+                        بعثة إشراف مشترك
+                    </div>
+                    <p class="text-muted mt-2">مشاركة إشراف بين جامعتين</p>
+                    <button onclick="setSelectedType('JointSupervision')" class="btn btn-warning text-dark mt-2 w-100">
+                        <i class="bi bi-arrow-left-circle-fill"></i> اختر
+                    </button>
+                </div>
+                </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: scale(1.03);
+        transition: all 0.3s ease;
+    }
+    .transition {
+        transition: all 0.3s ease;
+    }
+</style>
+
+    <div id="selectionSection" style="display:none;"  class="container mt-5">
+        <div class="card shadow-lg border-0 ">
+            <div class="card-header bg-gradient text-white text-center"
+                 style="background: linear-gradient(90deg, #007cf0, #00dfd8); border-radius: 0.5rem 0.5rem 0 0;">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i> اختيار عضو هيئة التدريس</h4>
+            </div>
+
+            <div class="card-body bg-light p-4">
+                <h5 class="text-center mb-4">يرجى اختيار الكلية، القسم، الدرجة الوظيفية، ثم عضو هيئة التدريس لإدخال بيانات البعثة</h5>
+
+                <form id="facultyForm" onsubmit="return false;">
+                    @Html.Hidden("SelectedType", "", new { id = "HiddenTypeId" })
+                    @Html.Hidden("SelectedFaculty", "", new { id = "HiddenMemberId" })
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">الكلية</label>
+                            <span id="collegeError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("CollegeID", (SelectList)ViewBag.Colleges, "-- اختر الكلية --", new { @class = "form-control", id = "collegeDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">القسم</label>
+                            <span id="deptError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("DepartmentID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر القسم --", new { @class = "form-control", id = "departmentDropdown" })
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">الدرجة الوظيفية</label>
+                            <span id="jobError" class="text-danger small d-block"></span>
+                            @Html.DropDownList("JobTitleID", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر الدرجة الوظيفية --", new { @class = "form-control", id = "jobTitleDropdown" })
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">عضو هيئة التدريس</label>
+                        <span id="facultyError" class="text-danger small d-block"></span>
+                        @Html.DropDownList("FacultyMemberId", new SelectList(Enumerable.Empty<SelectListItem>()), "-- اختر العضو --", new { @class = "form-control", id = "facultyDropdown" })
+                        <div id="selectedPreview" class="text-center text-primary fw-bold mt-3" hidden></div>
+                    </div>
+
+                    <div class="form-group mt-4 text-center">
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary btn-lg mx-2" onclick="goToForm()">
+                                <i class="bi bi-arrow-left-circle"></i> استمرار
+                            </button>
+
+
+                        </div>
+                        <!-- أزرار الأعضاء -->
+                        <div class="pt-3 border-top d-inline-block">
+                            <a href="@Url.Action("Create", "FacultyMembers")" class="btn btn-secondary btn-lg mx-2">
+                                <i class="bi bi-person-plus"></i> إضافة عضو جديد
+                            </a>
+                            <a href="../FacultyMembers/Index" class="btn btn-lg btn-outline-primary mx-2 d-inline-flex align-items-center">
+                                <i class="bi bi-people-fill me-2"></i> إدارة أعضاء هيئة التدريس
+                            </a>
+                        </div>
+                    </div>
+
+
+</form>
+            </div>
+        </div>
+    </div>
+
+    <div id="formContainer" style="display:none;"></div>
+</div>
+
+@section scripts {
+    <script>
+        function setSelectedType(typeId) {
+            $("#HiddenTypeId").val(typeId);
+            $("#selectionSection").slideDown();
+
+            $("#collegeDropdown").val("");
+            $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+            $("#jobTitleDropdown").val("");
+            $("#facultyDropdown").empty().append('<option value="">-- اختر العضو --</option>');
+            $("#formContainer").hide().empty();
+            $("#selectedPreview").text("");
+        }
+
+        $("#collegeDropdown").change(function () {
+            var collegeId = $(this).val();
+            if (collegeId) {
+                $.get('@Url.Action("GetDepartmentsByCollege", "Missions")', { collegeId: collegeId }, function (data) {
+                    let deptDropdown = $("#departmentDropdown");
+                    deptDropdown.empty().append('<option value="">-- اختر القسم --</option>');
+                    $.each(data, function (i, item) {
+                        deptDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                    });
+                });
+            } else {
+                $("#departmentDropdown").empty().append('<option value="">-- اختر القسم --</option>');
+            }
+        });
+
+        $("#departmentDropdown, #jobTitleDropdown").change(function () {
+            let deptId = $("#departmentDropdown").val();
+            let jobTitleId = $("#jobTitleDropdown").val();
+            if (!deptId || !jobTitleId) return;
+
+            $.get('@Url.Action("GetFacultyByDeptAndTitle", "Missions")', {
+                departmentId: deptId,
+                jobTitleId: jobTitleId
+            }, function (data) {
+                let facultyDropdown = $("#facultyDropdown");
+                facultyDropdown.empty().append('<option value="">-- اختر العضو --</option>');
+                $.each(data, function (i, item) {
+                    facultyDropdown.append($('<option>', { value: item.Value, text: item.Text }));
+                });
+
+                if (data.length > 0) {
+                    facultyDropdown.val(data[0].Value);
+                    $("#selectedPreview").text("تم اختيار: " + data[0].Text);
+                } else {
+                    $("#selectedPreview").text("لا يوجد أعضاء لهذا الاختيار.");
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $.get('@Url.Action("GetAllJobTitles", "Missions")', function (data) {
+                let jobDropdown = $("#jobTitleDropdown");
+                jobDropdown.empty().append('<option value="">-- اختر الدرجة الوظيفية --</option>');
+                $.each(data, function (i, item) {
+                    jobDropdown.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            });
+        });
+
+        function goToForm() {
+            const type = $("#HiddenTypeId").val();
+            const facultyId = $("#facultyDropdown").val();
+
+            if (!type || !facultyId) {
+                alert("يرجى اختيار نوع البعثة وعضو هيئة التدريس.");
+                return;
+            }
+            const encodedId = btoa(facultyId); // Base64 encode
+            const url = `/cdm/Missions/Create?encryptedId=${encodedId}&type=${type}`;
+            window.location.href = url;
+
+        }
+
+    </script>
+}
+

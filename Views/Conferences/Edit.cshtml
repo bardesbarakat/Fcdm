@@ -1,0 +1,142 @@
+﻿@model cdm.Models.Conference
+@{
+    ViewBag.Title = "تعديل البيانات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h4 class="text-primary mb-4"><i class="bi bi-pencil-square"></i> تعديل البيانات</h4>
+
+    @using (Html.BeginForm("Edit", "Conferences", FormMethod.Post, new { enctype = "multipart/form-data", @class = "bg-white p-5" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                العنوان
+                @Html.TextBoxFor(m => m.ConferenceTitle, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4">
+                مكان الانعقاد
+                @Html.TextBoxFor(m => m.ConferenceLocation, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4">
+                @Html.Label("الدولة")
+                @Html.DropDownList("ConferenceCountry", ViewBag.Countries as SelectList, "-- اختر الدولة --", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                مدة الانعقاد
+                @Html.TextBoxFor(m => m.ConferencePeriod, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4">
+                المساهمه
+                @Html.TextBoxFor(m => m.Contribution, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4">
+                نوع المشاركة
+                @Html.TextBoxFor(m => m.ParticipationType, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                (تاريخ مذكرة الاعتماد) تاريخ موافقة رئيس الجامعة
+                @Html.TextBoxFor(m => m.UniversityPresidentApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+            <div class="col-md-4">
+                تاريخ ورقم قرار رئيس الجامعه
+                @Html.TextBoxFor(m => m.UniversityPresidentDecision, new { @class = "form-control" })
+            </div>
+           
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+                نوع الفعالية
+                @Html.TextBoxFor(m => m.ConferenceType, new { @class = "form-control" })
+            </div>
+            <div class="col-md-4" id="securityDateContainer">
+                @Html.LabelFor(m => m.SecurityApprovalDate)
+                @Html.TextBoxFor(m => m.SecurityApprovalDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="col-md-4" id="securityNumberContainer">
+                @Html.LabelFor(m => m.SecurityApprovalNumber)
+                @Html.TextBoxFor(m => m.SecurityApprovalNumber, new { @class = "form-control" })
+            </div>
+
+
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4" id="presidentFileContainer">
+                <label>قرار رئيس الجامعة</label>
+                @if (!string.IsNullOrEmpty(Model.UniversityPresidentDecisionFile))
+                {
+                    <a href="@Url.Content(Model.UniversityPresidentDecisionFile)" target="_blank" class="btn btn-sm btn-link">📄 عرض الحالي</a>
+                }
+                <input type="file" name="UniversityDecisionFile" class="form-control" accept=".pdf" />
+            </div>
+            <div class="col-md-4">
+                <label>مذكرة الاعتماد</label>
+                @if (!string.IsNullOrEmpty(Model.ApprovalMemoFile))
+                {
+                    <a href="@Url.Content(Model.ApprovalMemoFile)" target="_blank" class="btn btn-sm btn-link">📄 عرض الحالي</a>
+                }
+                <input type="file" name="ApprovalMemoFile" class="form-control" accept=".pdf" />
+
+            </div>
+            <div class="col-md-4">
+                <label>إضافة ملفات أخرى (PDF فقط)</label>
+                <input type="file" name="OtherFiles" multiple class="form-control" accept=".pdf" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                @Html.LabelFor(m => m.Notes)
+                @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+            </div>
+        </div>
+        if (!string.IsNullOrEmpty(Model.OtherFiles))
+        {
+            <div class="mb-3">
+                <label>الملفات الأخرى الحالية:</label>
+                <ul class="list-unstyled">
+                    @foreach (var file in Model.OtherFiles.Split(';'))
+                    {
+                        var fileName = System.IO.Path.GetFileName(file);
+                        <li>
+                            <a href="@Url.Content(file)" target="_blank">📎 @fileName</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> حفظ التعديلات
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">إلغاء</a>
+        </div>
+    }
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // النوع الحالي مأخوذ من الموديل مباشرة
+            var conferenceType = '@Model.ConferenceType';
+
+            if (conferenceType === 'مؤتمر داخلي') {
+                $("#securityDateContainer").hide();
+                $("#securityNumberContainer").hide();
+                $("#presidentFileContainer").hide();
+            }
+        });
+    </script>
+}

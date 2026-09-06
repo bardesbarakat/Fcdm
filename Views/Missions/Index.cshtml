@@ -1,0 +1,93 @@
+﻿@model IEnumerable<cdm.Models.Mission>
+
+@{
+    ViewBag.Title = "قائمة البعثات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap pb-2">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-list-task"></i> قائمة البعثات
+            </h4>
+            <a href="@Url.Action("InsertData", "Missions")" class="btn btn-success mb-3">
+                <i class="bi bi-plus-circle-fill"></i> إضافة بعثة جديدة
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Index", "Missions", FormMethod.Get, new { @class = "row g-2 pt-1" }))
+        {
+            <div class="col-md-5">
+                @Html.TextBox("FacultyName", Request["FacultyName"], new { @class = "form-control", placeholder = "ابحث باسم العضو..." })
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Missions")" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> مسح الفلاتر
+                </a>
+            </div>
+        }
+    </div>
+
+    <table class="table table-bordered table-striped table-hover text-center">
+        <thead class="table-dark">
+            <tr style="background: linear-gradient(to right, #1e3c72, #2a5298);">
+                <th>#</th>
+                <th>عضو هيئة التدريس</th>
+                <th>نوع البعثة</th>
+                <th>الدولة</th>
+                <th>الجامعة</th>
+                <th>الغرض من البعثة</th>
+                <th>تاريخ السفر</th>
+
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8">لا توجد بعثات حتى الآن.</td>
+                </tr>
+            }
+            else
+            {
+                int index = 1;
+                foreach (var item in Model)
+                {
+        <tr>
+            <td>@index</td>
+            <td>@item.FacultyMember.FullName</td>
+            <td>@item.MainMissionType</td>
+            <td>@item.Country</td>
+            <td>@item.UniversityName</td>
+            <td>@item.MissionPurpose</td>
+
+            <td>@(item.TravelDate?.ToString("yyyy-MM-dd") ?? "بعثة داخلية لا يوجد لها تاريخ سفر")</td>
+
+
+
+            <td>
+                <a href="@Url.Action("Details", "Missions", new { id = item.MissionID })" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> عرض
+                </a>
+                <a href="@Url.Action("Edit", "Missions", new { id = item.MissionID })" class="btn btn-sm btn-warning">
+                    <i class="bi bi-pencil-square"></i> تعديل
+                </a>
+
+                <a href="@Url.Action("Delete", "Missions", new { id = item.MissionID })" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i> حذف
+                </a>
+            </td>
+        </tr>
+                    index++;
+                }
+            }
+        </tbody>
+    </table>
+</div>
