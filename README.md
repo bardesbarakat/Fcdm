@@ -104,8 +104,8 @@ Follow these steps to set up and run the project locally on your machine.
 **Bardes Barakat**
 
 - GitHub: [@bardesbarakat](https://github.com/bardesbarakat)
-- LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/your-profile) *(Update this link)*
-- Email: your.email@example.com *(Update this email)*
+- LinkedIn:https://www.linkedin.com/in/bardesbarakat/
+- Email: bardes@fayoum.edu.eg
 
 ---
 ⭐️ *If you find this project interesting or helpful, please consider giving it a star!*
